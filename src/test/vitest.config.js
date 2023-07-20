@@ -46,8 +46,7 @@ export default defineConfig({
     setupFiles: ['./setup-teardown-hooks.js'],
     environment: 'jsdom',
     include: [
-//      'src/unit/frontend/*.test.js',
-      'src/unit/frontend/utils/utils.test.js',
+      'src/unit/frontend/*.test.js',
     ],
   }
 });

@@ -1,8 +1,8 @@
 {
-  "name": "another_internet_computer_starter_template",
+  "name": "icrc1_payment_client_demo",
   "version": "0.2.0",
   "private": true,
-  "description": "Internet Computer starter application with Vite React React Router Tailwind mo-dev Internet Identity Auth Client and WebWorkers serving Motoko",
+  "description": "Motoko Adaption of BNT-3 ICRC1 Compliant Payment Flow with web workers, Tailwind &amp; demonstrating the setup for a full-stack decentralized app for processing payments at point of sale",
   "type": "module",
   "author": "Ashton Engberg <atengberg@proton.me> (https://github.com/atengberg)",
   "keywords": [
@@ -16,10 +16,12 @@
     "Tailwind",
     "Web Workers",
     "Internet Identity",
-    "AuthClient"
+    "AuthClient",
+    "ICRC1 Token Standard",
+    "Point of Sale"
   ],
   "scripts": {
-    "test": "cd src/frontend; npm ci --legacy-peer-deps; cd ../..; npm ci --legacy-peer-deps; node ./setup.js --testing",
+    "test": "cd src/frontend; npm ci --legacy-peer-deps; cd ../..; npm ci --legacy-peer-deps; node ./setup.js --testing; cd src/test; npm run test",
     "setup": "cd src/frontend; npm ci --legacy-peer-deps; cd ../..; npm ci --legacy-peer-deps; node ./setup.js",
     "build": "cd src/frontend; npm run build",
     "start": "run-p frontend backend",

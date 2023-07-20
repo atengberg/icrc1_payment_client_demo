@@ -1,13 +1,13 @@
 {
-  "name": "icrc1-payment-client-demo-frontend-unit-tests",
+  "name": "icrc1-payment-client-demo-tests",
   "version": "1.0.0",
-  "description": "Unit tests for the ICRC1 payment client demo frontend.",
+  "description": "Tests for the ICRC1 payment client demo.",
   "main": "index.js",
   "scripts": {
     "test": "vitest"
   },
   "type": "module",
-  "author": "",
+  "author": "Ashton Engberg <atengberg@proton.me> (https://github.com/atengberg)",
   "license": "ISC",
   "devDependencies": {
     "@dfinity/agent": "^0.15.7",

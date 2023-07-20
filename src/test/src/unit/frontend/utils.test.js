@@ -39,7 +39,7 @@ describe('Test Methods of Utils', () => {
     completed: {
       raw: {
         id: `cn6-ci4c8266f8-9086-4004-8a72-7451dd077232`,
-        status: { Completed: { timestampNs: equivalent.nanosecondsBigInt } },
+        status: { Completed: { timestampNs: equivalent.nanosecondsBigInt, txIndex : 1n } },
         clientPaymentId: '4c8266f8-9086-4004-8a72-7451dd077232',
         createdAtNs: equivalent.nanosecondsBigInt,
         description: [],
@@ -50,7 +50,7 @@ describe('Test Methods of Utils', () => {
       },
       parsed: {
         id: `cn6-ci4c8266f8-9086-4004-8a72-7451dd077232`,
-        status: { type: 'CONFIRMED', timestamp: equivalent.date },
+        status: { type: 'CONFIRMED', timestamp: equivalent.date, extra: { txIndex : 1n } },
         description: null,
         clientPaymentId: `4c8266f8-9086-4004-8a72-7451dd077232`,
         creationTimestamp: equivalent.date,
@@ -421,9 +421,9 @@ describe('Test Methods of Utils', () => {
       expect(utils.parseStatus({ Pending: {} })).toEqual({ type: statusEnum.PENDING })
     });
 
-    it('should parse a complete status with timestamp', () => {
-      const status = { Completed: { timestampNs: equivalent.nanosecondsBigInt } };
-      expect(utils.parseStatus(status)).toEqual({ type: statusEnum.CONFIRMED, timestamp: new Date(equivalent.milliseconds) })
+    it('should parse a complete status with timestamp and transaction index', () => {
+      const status = { Completed: { timestampNs: equivalent.nanosecondsBigInt, txIndex: 1n } };
+      expect(utils.parseStatus(status)).toEqual({ type: statusEnum.CONFIRMED, timestamp: new Date(equivalent.milliseconds), extra: { txIndex: 1n } })
     });
 
     it('should parse a failed InvalidRecipientAddress status with timestamp', () => {
@@ -491,9 +491,10 @@ describe('Test Methods of Utils', () => {
       expect(utils.getStatusMessage(status)).toEqual('Payment is in process');
     });
     it('should get message text from confirmed sent payment status', () => {
-      const status = { type: statusEnum.CONFIRMED, timestamp: new Date(equivalent.milliseconds) };
+      const status = { type: statusEnum.CONFIRMED, timestamp: new Date(equivalent.milliseconds), extra: { txIndex: 1 } };
       // Date will get formatted to system locale:
       expect(utils.getStatusMessage(status).includes(`Payment confirmed received at`)).toBe(true);
+      expect(utils.getStatusMessage(status).includes(`at ICRC1 token canister's transaction index 1`)).toBe(true);
     });
     it('should get message text from failed sent payment status due to invalid recipient address address', () => {
       const status = { type: statusEnum.FAILED_INVALID_ADDRESS, timestamp: new Date(equivalent.milliseconds) };
