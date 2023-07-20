@@ -1,0 +1,49 @@
+{
+  "name": "another_internet_computer_starter_template",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Internet Computer starter application with Vite React React Router Tailwind mo-dev Internet Identity Auth Client and WebWorkers serving Motoko",
+  "type": "module",
+  "author": "Ashton Engberg <atengberg@proton.me> (https://github.com/atengberg)",
+  "keywords": [
+    "Internet Computer",
+    "Motoko",
+    "React",
+    "React Hooks",
+    "JavaScript",
+    "Canister",
+    "Vite",
+    "Tailwind",
+    "Web Workers",
+    "Internet Identity",
+    "AuthClient"
+  ],
+  "scripts": {
+    "test": "cd src/frontend; npm ci --legacy-peer-deps; cd ../..; npm ci --legacy-peer-deps; node ./setup.js --testing",
+    "setup": "cd src/frontend; npm ci --legacy-peer-deps; cd ../..; npm ci --legacy-peer-deps; node ./setup.js",
+    "build": "cd src/frontend; npm run build",
+    "start": "run-p frontend backend",
+    "backend": "mo-dev --generate --deploy -y",
+    "frontend": "cd src/frontend; npm run start",
+    "lint": "cd src/frontend; npm run lint",
+    "sources": "mops sources",
+    "postinstall": "mops install"
+  },
+  "engines": {
+    "node": "^12 || ^14 || ^16 || ^18"
+  },
+  "dependencies": {
+    "@dfinity/agent": "^0.17.0",
+    "@dfinity/candid": "^0.17.0",
+    "@dfinity/ledger": "^0.0.11",
+    "@dfinity/principal": "^0.17.0",
+    "@dfinity/utils": "^0.0.18",
+    "common-tags": "^1.8.2",
+    "dotenv": "^16.3.1",
+    "mo-dev": "^0.10.1",
+    "zx": "^7.2.3"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  }
+}

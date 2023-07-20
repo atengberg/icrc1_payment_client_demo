@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" class="overflow-hidden">
+  <head>
+    <link rel="modulepreload" href="./src/worker/worker.js" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ICRC1 Payment Client Demo</title>
+    <link rel="icon" href="/assets/favicon.ico" />
+    <!-- Satoshi (no italics) -->
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@1,900,700,500,301,701,300,501,401,901,400,2&display=swap" rel="stylesheet">
+    <!-- Figtree -->
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <!-- Courier Prime (monospace) -->
+    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <!-- Manrope -->
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet"> 
+    <!-- Inconsolata (monospace) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet"> 
+  </head>
+  <body>
+    <div id="root" class="h-screen"></div>
+    <script type="module" src="/src/main.jsx"></script>
+    <!--Script polyfills global.-->
+    <script>window.global ||= window</script>
+    <script type="module">
+      /* Add the debug screens overlay only in development mode. */
+      document.body.className += (import.meta.env.DEV ? ' debug-screens' : '');
+    </script>
+  </body>
+</html>

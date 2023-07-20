@@ -1,0 +1,62 @@
+{
+  "canisters": {
+    "backend": {
+      "main": "src/backend/main.mo",
+      "type": "motoko",
+      "declarations": {
+        "output": "src/declarations/backend"
+      }
+    },
+    "icrc1_token_canister": {
+      "type": "custom",
+      "wasm": "src/icrc1-token-canister/icrc1.wasm",
+      "candid": "src/icrc1-token-canister/icrc1.did",
+      "declarations": {
+        "node_compatibility": true,
+        "output": "src/declarations/icrc1-tlc/"
+      },
+      "COMMENT": "BY ADDING key remote and specifying candid and mainnet id, like II below, should work on mainnet as well."
+    },
+    "internet_identity": {
+      "type": "custom",
+      "candid": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity.did",
+      "wasm": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity_dev.wasm.gz",
+      "shrink": false,
+      "remote": {
+        "candid": "internet_identity.did",
+        "id": {
+          "ic": "rdmx6-jaaaa-aaaaa-aaadq-cai"
+        }
+      },
+      "declarations": {
+        "output": "src/declarations/null/"
+      }
+    },
+    "frontend": {
+      "dependencies": [
+        "backend",
+        "internet_identity",
+        "icrc1_token_canister"
+      ],
+      "frontend": {
+        "entrypoint": "src/frontend/index.html"
+      },
+      "source": [
+        "src/frontend/assets",
+        "src/frontend/dist/"
+      ],
+      "type": "assets",
+      "declarations": {
+        "output": "src/declarations/null"
+      }
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": "mops sources"
+    }
+  },
+  "output_env_file": "./.env",
+  "version": 1
+}
