@@ -13,7 +13,7 @@ import {
   getCanisterId,
   getICRC1TokenCanisterDfxDeploymentCmd,
   getICRC1TransferDfxCmd,
-} from './script_utils.js';
+} from './script-utils.js';
 
 dotenv.config();
 
