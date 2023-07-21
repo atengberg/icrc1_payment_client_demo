@@ -67,3 +67,4 @@ All testing resides in its [own parent directory](../test/), which is where the 
  - [HYPERCOLOR](https://hypercolor.dev/)
  - [Box Shadows for TailwindCSS](https://manuarora.in/boxshadows)
  - [TAILBLOCKS.io](https://tailblocks.cc/)
+ - [WHATWG - WebWorkers](https://html.spec.whatwg.org/multipage/workers.html)
