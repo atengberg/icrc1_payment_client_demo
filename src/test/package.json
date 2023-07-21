@@ -4,7 +4,8 @@
   "description": "Tests for the ICRC1 payment client demo.",
   "main": "index.js",
   "scripts": {
-    "test": "vitest"
+    "test:auto": "vitest run",
+    "test": "vitetest"
   },
   "type": "module",
   "author": "Ashton Engberg <atengberg@proton.me> (https://github.com/atengberg)",

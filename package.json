@@ -21,8 +21,9 @@
     "Point of Sale"
   ],
   "scripts": {
-    "test": "cd src/frontend; npm ci --legacy-peer-deps; cd ../..; npm ci --legacy-peer-deps; node ./setup.js --testing; cd src/test; npm run test",
-    "setup": "cd src/frontend; npm ci --legacy-peer-deps; cd ../..; npm ci --legacy-peer-deps; node ./setup.js",
+    "ci:all": "cd src/frontend; npm ci --legacy-peer-deps; cd ../..; npm ci --legacy-peer-deps",
+    "test": "npm run ci:all; node ./setup.js --testing; cd src/test; npm run test:auto",
+    "setup": "npm run ci:all; node ./setup.js",
     "build": "cd src/frontend; npm run build",
     "start": "run-p frontend backend",
     "backend": "mo-dev --generate --deploy -y",
