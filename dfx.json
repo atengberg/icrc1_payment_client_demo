@@ -12,8 +12,7 @@
       "wasm": "src/icrc1-token-canister/icrc1.wasm",
       "candid": "src/icrc1-token-canister/icrc1.did",
       "declarations": {
-        "node_compatibility": true,
-        "output": "src/declarations/icrc1-tlc/"
+        "output": "src/declarations/null"
       },
       "COMMENT": "BY ADDING key remote and specifying candid and mainnet id, like II below, should work on mainnet as well."
     },
@@ -29,7 +28,7 @@
         }
       },
       "declarations": {
-        "output": "src/declarations/null/"
+        "output": "src/declarations/null"
       }
     },
     "frontend": {
