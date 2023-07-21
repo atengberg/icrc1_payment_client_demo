@@ -2,6 +2,11 @@
 
 ## Adaption of BNT-3 ICRC1 Compliant Payment Flow with web workers, Tailwind &amp; more...
 
+<p align="center">
+  <img width="800" height="auto" src="./imgs/landing_screenshot_800w.png">
+</p>
+
+
 ### Project Structure
  - [backend](./src/backend/) - backend canister processing ICRC1 payments 
  - [frontend](./src/frontend) - asset canister hosted frontend client to the backend canister
