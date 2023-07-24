@@ -21,7 +21,7 @@
     "Point of Sale"
   ],
   "scripts": {
-    "ci:all": "cd src/frontend; npm ci --legacy-peer-deps; cd ../..; npm ci --legacy-peer-deps",
+    "ci:all": "cd src/frontend; npm ci --legacy-peer-deps; cd ../..; cd src/workbench; npm ci --legacy-peer-deps; cd ../..; npm ci --legacy-peer-deps",
     "test": "npm run ci:all; node ./setup.js --testing; cd src/test; npm run test:auto",
     "setup": "npm run ci:all; node ./setup.js",
     "build": "cd src/frontend; npm run build",
