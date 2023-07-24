@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test:auto": "vitest run",
-    "test": "vitetest"
+    "test": "vitest"
   },
   "type": "module",
   "author": "Ashton Engberg <atengberg@proton.me> (https://github.com/atengberg)",
