@@ -3,12 +3,12 @@
  * @returns {string} The ellipsized ICRC1 address text.
  * 
  * @example ellipsizeICRC1Address("k2t6j-2nvnp-4zjm3-25dtz-6xhaa-c7boj-5gayf-oj3xs-i43lp-teztq-6ae") -> "k2t6j...6ae"  
- * @example ellipsizeICRC1Address("k2t6j-2nvnp-4zjm3-25dtz-6xhaa-c7boj-5gayf-oj3xs-i43lp-teztq-6ae-pscseiy.1") -> "k2t6j...pscseiy.1"  
+ * @example ellipsizeICRC1Address("k2t6j-2nvnp-4zjm3-25dtz-6xhaa-c7boj-5gayf-oj3xs-i43lp-teztq-6ae-6cc627i.1") -> "k2t6j...6cc627i.1"  
  * @example ellipsizeICRC1Address("k2t6j-2nvnp-4zjm3-25dtz-6xhaa-c7boj-5gayf-oj3xs-i43lp-teztq-6ae-dfhypjy.1234567809") -> "k2t6j...dfhypjy.1234567809"  
  * @example ellipsizeICRC1Address("k2t6j-2nvnp-4zjm3-25dtz-6xhaa-c7boj-5gayf-oj3xs-i43lp-teztq-6ae-3l7u4da.12345678900a") -> "k2t6j...3l7u4da.123...8900a"
  * @example ellipsizeICRC1Address("k2t6j-2nvnp-4zjm3-25dtz-6xhaa-c7boj-5gayf-oj3xs-i43lp-teztq-6ae-dfxgiyy.102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20") -> "k2t6j...dfxgiyy.102...e1f20"   
  */
-const ellipsizeICRC1Address = (address) => {
+const ellipsizeICRC1Address = (address, leadingTrailingCharCount = 5) => {
   if (!address || typeof(address) !== 'string' || address.length === 0) {
     throw new Error(`Param address ${JSON.stringify({ address })} is not valid ICRC1 account encoded text`);
   } else {
