@@ -14,7 +14,13 @@
       "declarations": {
         "output": "src/declarations/null"
       },
-      "COMMENT": "BY ADDING key remote and specifying candid and mainnet id, like II below, should work on mainnet as well."
+      "COMMENT": "Note the remote canister id below points to the ckBTC token canister",
+      "remote": {
+        "candid": "src/icrc1-token-canister/icrc1.did",
+        "id": {
+          "ic": "mxzaz-hqaaa-aaaar-qaada-cai"
+        }
+      }
     },
     "internet_identity": {
       "type": "custom",
