@@ -70,7 +70,7 @@ const Content = ({
   return useMemo(() => {
     if (hasError) {
       return (
-        <div  className="error-status-layout-container m-xl:py-4 py-2 sm:py-8">
+        <div  className="error-status-layout-container">
           <span className="font-semibold">Cannot initiate sending payment when there is any error</span>
         </div>
       );       

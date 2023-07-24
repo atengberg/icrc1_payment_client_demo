@@ -123,7 +123,7 @@
     }
 
     .error-status-layout-container {
-      @apply flex flex-col m-s:gap-1.5 m-l:gap-2 sm:gap-4 w-full text-red-500 text-[1.3rem] italic text-center font-medium tracking-[.1rem];
+      @apply flex flex-col m-xl:py-4 py-12 sm:py-12 w-full text-red-500 text-[1.3rem] text-base px-2 italic text-center font-medium tracking-[.1rem];
     }
 
     .confirm-sumbit-button-label {
