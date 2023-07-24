@@ -9,8 +9,12 @@ const Payments = () => {
     return;
   }
   return (
+    <section >
     <PaymentsList payments={payments} tokenSymbol={symbol} decimals={decimals}/>
+    </section>
+
   );
 };
 
 export default Payments;
+

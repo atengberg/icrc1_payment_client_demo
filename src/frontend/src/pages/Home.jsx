@@ -11,7 +11,8 @@ const Home = () => {
   } = useCanister();
 
   return (
-    <div className="scrollable">
+    <section className="scrollable" aria-labelledby="label-user-home-page">
+      <label className="sr-only" name="label-user-home-page" id="label-user-home-page">user home page</label>
       <AccountOverview  
         createdCount={createdCount} 
         accountAddress={accountAddress} 
@@ -20,7 +21,7 @@ const Home = () => {
       />
       <div className="m-l:h-3 h-2 sm:h-4 lg:h-6 xl:h-8"></div>
       <ICRC1CanisterMetadata metadata={canisterMetadata} />
-    </div>
+    </section>
   );
 };
 

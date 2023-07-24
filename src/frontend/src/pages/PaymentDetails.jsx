@@ -27,9 +27,10 @@ const PaymentDetails = () => {
   };
 
   return (
-    <div className="scrollable">
+    <section className="scrollable" aria-labelledby="label-payment-details-page">
+      <label className="sr-only" name="label-payment-details-page" id="label-payment-details-page">payment details page</label>
       <PaymentDetailsContent payment={payment} tokenSymbol={symbol} decimals={decimals} logo={logo} />
-    </div>
+    </section>
   )
 };
 

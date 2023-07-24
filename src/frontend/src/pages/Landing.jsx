@@ -9,7 +9,8 @@ const copy = {
 const Landing = () => {
  
   return (
-    <section className="scrollable min-h-[40rem]">
+    <section className="scrollable min-h-[40rem]" aria-labelledby="label-landing-page">
+      <label className="sr-only" name="label-landing-page" id="label-landing-page">ICRC1 Payment Client Demo landing page</label>
       <div className="flex h-full w-full flex-col gap-2">
         <div className="flex-[2]"></div>
         <div className="m-xl:flex-row flex flex-col justify-center gap-4 text-center">
