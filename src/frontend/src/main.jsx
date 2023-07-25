@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter as Router } from 'react-router-dom';
+import useInternetIdentity from './hooks/useInternetIdentity.jsx';
 import CanisterProvider from './feature/canister-provider/CanisterProvider.jsx';
 import App from './App.jsx';
 import './index.css';
@@ -8,12 +9,53 @@ import './index.css';
 // Typescript should mean this is unnecessary.
 global.BigInt.prototype.toJSON = function () { return this.toString() };
 
+// Indexdb not available in testing context (and hooks can't be called conditionally).
+const TestingDapp = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const auth = {
+    isAuthenticated,
+    login: () => setIsAuthenticated(() => true),
+    logout: () => setIsAuthenticated(() => false)
+  };
+  return (
+    <Router>
+      <CanisterProvider 
+        workerFilePath="../worker/worker.js"
+        auth={auth} 
+      >
+        <App />
+      </CanisterProvider>
+    </Router>
+  )
+};
+
+const Dapp = () => {
+  // Note the CanisterProvider will pass auth spread as part of its value.
+  const {
+    isAuthenticated,
+    login,
+    logout,
+  } = useInternetIdentity({ 
+    onUserLoggedOut: () => window.location.reload() 
+  });
+  return (
+    <Router>
+      <CanisterProvider 
+        workerFilePath="../worker/worker.js"
+        auth={{ 
+          isAuthenticated,
+          login,
+          logout
+        }} 
+      >
+        <App />
+      </CanisterProvider>
+    </Router>
+  )
+};
+
 const dapp = (
-  <Router>
-    <CanisterProvider workerFilePath="../worker/worker.js">
-      <App />
-    </CanisterProvider>
-  </Router>
+  import.meta.env.MODE_IS_TESTING ? <TestingDapp /> : <Dapp />
 );
 
 const notSupported = (

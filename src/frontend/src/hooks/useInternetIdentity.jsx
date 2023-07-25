@@ -54,26 +54,13 @@ const useInternetIdentity = ({
     onUserLoggedOut
   ]);
 
-  const dev = useMemo(() => {
-    // Get from environmental variable.
-    const isTesting = (import.meta.env.MODE_IS_TESTING || false);
-    const login = () => setIsAuthenticated(() => true);
-    const logout = () => setIsAuthenticated(() => false);
-    return {
-      isTesting, 
-      login: isTesting ? login : () => {},
-      logout: isTesting ? logout : () => {},
-    };
-  }, []);
-
   return useMemo(() => {
     return {
-      dev,
       login,
       logout,
       isAuthenticated
     };
-  }, [login, logout, dev, isAuthenticated]);
+  }, [login, logout, isAuthenticated]);
 };
 
 export default useInternetIdentity;

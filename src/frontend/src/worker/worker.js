@@ -1,9 +1,11 @@
 
+import { Buffer } from 'buffer';
+self.Buffer = Buffer;
+
 // Need to manually polyfill in WebWorker's context to make candid Nat's transferrable.
 // Good reason for using Typescript instead...
 BigInt.prototype.toJSON = function () { return this.toString(); };
 
-import { get, set } from 'idb-keyval';
 import getActor  from "./createWorkerActor.js";
 import { stateKeys, actionTypes } from "../utils/enums.js";
 import {
@@ -29,14 +31,14 @@ function handleMessage({
   key,
   args,
 } = {}) {
+  console.log(`handleMessage type[${type}]\t\tkey[${key}]\t\t\targs[${args}]`)
   switch (type) {
     case actionTypes.QUERY: 
       switch (key) {
         case stateKeys.canisterMetadata: {
           const call = async () => {
-            const actor = await getActor(true);
             queryCanister({
-              actor,
+              anonymous: true,
               method: 'get_icrc1_token_canister_metadata',
               key,
               responseHandler: parseTokenCanisterMetadataResponse
@@ -51,7 +53,7 @@ function handleMessage({
             checkCache({ key: stateKeys.accountPayments }),
             checkCache({ key: stateKeys.accountBalance })
           ]);
-          //syncTimer = setInterval(() => syncCall(args?.testing), 10000);
+          //syncTimer = setInterval(() => syncCall(args?.testing), pollPeriodMs);
           return;
       }
       break;
@@ -75,8 +77,10 @@ function handleMessage({
   throw new Error('WebWorker::handlemessage called without an agreeable type or key!' + JSON.stringify({ type, key, args }));
 }
 
-// Mostly naive caching in indexdb (key is concatenated with caller's principal, but not checked with timestamps that exist).
+// Mostly naive caching in indexdb (key is concatenated with caller's principal).
 async function checkCache({ key }) {
+  if (import.meta.env.MODE_IS_TESTING) return;
+  const { get } = await import("idb-keyval");
   const cached = await get(key);
   if (cached) {
     const result = JSON.parse(cached);
@@ -85,11 +89,12 @@ async function checkCache({ key }) {
 };
 
 async function queryCanister({ 
-  actor: { actor, principal }, 
+  anonymous, 
   method,
   key,
   responseHandler,
-} = {}) {
+}) {
+  const { actor, principal } = await getActor(anonymous);
   const response = await actor[method]();
   const result = responseHandler(response);
   if (result?.ok) {
@@ -97,21 +102,23 @@ async function queryCanister({
   } else {
     self.postMessage({ type: actionTypes.ERROR, key, payload: { ...result.err }});
   }
-  // Stow in the cache.
-  await set(`key-${principal}`, JSON.stringify(result));
+  // Stow in the cache if indexdb is available.
+  if (!import.meta.env.MODE_IS_TESTING) {
+    const { set } = await import("idb-keyval");
+    await set(`key-${principal}`, JSON.stringify(result));
+  }
 };
 
 async function pollingCall() {
-  const actor = await getActor(false);
   Promise.all([
     queryCanister({
-      actor,
+      anonymous: false,
       method: 'get_account_balance',
       key: stateKeys.accountBalance,
       responseHandler: parseAccountBalanceResponse
     }),
     queryCanister({
-      actor,
+      anonymous: false,
       method: 'get_account_payments',
       key: stateKeys.accountPayments,
       responseHandler: parseAccountPaymentsResponse

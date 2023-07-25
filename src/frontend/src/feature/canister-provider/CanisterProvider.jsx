@@ -13,24 +13,17 @@ const CanisterContext = createContext({});
  * a callback to useDedicatedWorker will be needed). 
  * Note { type, key, payload / args } type is used for both reducer's dispatch and webworker messages' data. 
  * */
-const CanisterProvider = ({ children, workerFilePath }) => {
+const CanisterProvider = ({ 
+  auth,
+  workerFilePath,
+  children
+}) => {
+  
   // Init the reducer:
-  const [state, dispatch] = useReducer(
-    reducer,
-    initReducerState
-  );  
+  const [state, dispatch] = useReducer(reducer, initReducerState);  
   
   // Init the webworker handler, passing it the worker's path and reducer's dispatch:
   const { postMessage } = useDedicatedWorker(workerFilePath, dispatch);
-
-  // Init the Internet Identity hook:
-  const {
-    // Dev is ad-hoc auth bypass for testing. Better solution?
-    dev,
-    isAuthenticated,
-    login,
-    logout,
-  } = useInternetIdentity({ onUserLoggedOut: () => window.location.reload() });
 
   // Cleanup when unmounted:
   useEffect(() => { return () => dispatch({ type: actionTypes.RESET });}, []);
@@ -56,6 +49,12 @@ const CanisterProvider = ({ children, workerFilePath }) => {
     });
   }, [postMessage])
 
+  const {
+    isAuthenticated,
+    login,
+    logout
+  } = auth;
+
   // Note the clientPaymentId is actually used (since it's the UI). 
   const getPaymentById = useCallback((clientPaymentId) => state?.payments?.find(p => p.clientPaymentId === clientPaymentId), [state]);
 
@@ -68,9 +67,8 @@ const CanisterProvider = ({ children, workerFilePath }) => {
 
   // Memoization is React's form of TLC. 
   const memeod = useMemo(() => ({
-    ...state,
+    ...state, 
     isAuthenticated,
-    dev,
     login,
     logout,
     onDispatchSendPayment,
@@ -78,7 +76,6 @@ const CanisterProvider = ({ children, workerFilePath }) => {
   }), [
     state,
     isAuthenticated,
-    dev,
     login,
     logout,
     onDispatchSendPayment,

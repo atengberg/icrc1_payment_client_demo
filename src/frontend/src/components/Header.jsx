@@ -17,9 +17,11 @@ import { statusEnum, pagesEnum } from "../utils/enums";
 
 const Header = () => {
 
-  const { isAuthenticated, dev } = useCanister();
+  const { isAuthenticated, login, logout } = useCanister();
   const { pathname } = useLocation();
   const [currentPage, setCurrentPage] = useState(pagesEnum.LANDING);
+
+
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -97,7 +99,7 @@ const Header = () => {
     <div className="flex h-[4.25rem] items-center px-6 xl:container xl:mx-auto">
       <div className="m-s:gap-5 m-l:gap-6 m-xl:gap-7 flex h-full w-full items-center gap-4 sm:gap-8 md:gap-10 lg:gap-12">
         <BrandLogoWidget />
-        <DevMode dev={dev} isAuthenticated={isAuthenticated} />
+        <DevMode auth={{ login, logout, isAuthenticated }} />
         <div className="flex-1"></div>
         {getPageControls(currentPage)}
         <ThemeModeWidget />
@@ -107,15 +109,15 @@ const Header = () => {
   );
 };
 
-const DevMode = ({ dev, isAuthenticated }) => {
-  if (!dev.isTesting) {
+const DevMode = ({ auth: { isAuthenticated, login, logout } }) => {
+  if (!(import.meta.env.MODE_IS_TESTING)) {
     return null;
   } else {
     return (
       <div className="themed-font-color z-[99]">
           {isAuthenticated 
-          ? <RiBug2Fill className="h-12 w-12" onClick={() => dev.logout()}/>
-          : <RiBug2Line className="h-12 w-12" onClick={() =>  dev.login()}/>
+          ? <RiBug2Fill className="h-12 w-12" onClick={() => logout()}/>
+          : <RiBug2Line className="h-12 w-12" onClick={() =>  login()}/>
           }
       </div>
     );
