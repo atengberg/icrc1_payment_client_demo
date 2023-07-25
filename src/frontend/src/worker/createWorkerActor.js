@@ -1,11 +1,7 @@
-import { Buffer } from 'buffer';
 import fetch from 'isomorphic-fetch';
 import { Actor, HttpAgent } from "@dfinity/agent";
 import { Ed25519KeyIdentity } from '@dfinity/identity';
 import { idlFactory } from '../../../declarations/backend/backend.did.js';
-import pemfile from 'pem-file';
-import { Secp256k1KeyIdentity } from '@dfinity/identity-secp256k1';
-
 
 //https://github.com/dfinity/agent-js/blob/main/packages/identity/src/identity/ed25519.ts
 function fromHexString(hexString)  {
@@ -41,26 +37,13 @@ async function getActor(anonymous = false) {
     actor,
     principal
   }
-}
+};
 
 async function getIdentity_() {
   if (import.meta.env.MODE_IS_TESTING) {
     return Ed25519KeyIdentity.fromKeyPair(
       fromHexString("52EF30BF9E412A693D644AEBE8E22DE574759291065DC392382D4E633AC0C2E9"),
       fromHexString("3771C1F078763EB5AA8561F642A82BD6F6D4F53DE06F5CE07410FC64E765427552EF30BF9E412A693D644AEBE8E22DE574759291065DC392382D4E633AC0C2E9"))
-/*
-    return (Secp256k1KeyIdentity.fromSecretKey(pemfile.decode(
-      `
-      -----BEGIN EC PRIVATE KEY-----
-      MHQCAQEEICJxApEbuZznKFpV+VKACRK30i6+7u5Z13/DOl18cIC+oAcGBSuBBAAK
-      oUQDQgAEPas6Iag4TUx+Uop+3NhE6s3FlayFtbwdhRVjvOar0kPTfE/N8N6btRnd
-      74ly5xXEBNSXiENyxhEuzOZrIWMCNQ==
-      -----END EC PRIVATE KEY-----
-      `.replace(/(\n)\s+/g, '$1'),
-        // replace(<regex>) makes template literal multiline to be ok for pemfile.
-      ).slice(7, 39))
-    );
-*/
   } else {
     const { AuthClient } = await import("@dfinity/auth-client");
     const authClient = await AuthClient.create({
@@ -75,6 +58,6 @@ async function getIdentity_() {
     }
     return authClient.getIdentity();
   }
-}
+};
 
 export default getActor;

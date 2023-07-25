@@ -1,7 +1,3 @@
-
-import { Buffer } from 'buffer';
-self.Buffer = Buffer;
-
 // Need to manually polyfill in WebWorker's context to make candid Nat's transferrable.
 // Good reason for using Typescript instead...
 BigInt.prototype.toJSON = function () { return this.toString(); };
@@ -136,7 +132,7 @@ async function sendPaymentCall({ key, args }) {
     setTimeout(() => {
       self.postMessage({ type: actionTypes.ERROR, key, payload: { ...result.err } });
     }, 11);
-  }
+  };
 };
 
 self.addEventListener("error", e => {

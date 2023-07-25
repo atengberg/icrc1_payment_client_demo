@@ -12,6 +12,10 @@ import pemfile from 'pem-file';
 const canisterId = process.env.CANISTER_ID_BACKEND
 const host = `http://localhost:4943`;
 
+function fromHexString(hexString)  {
+  return new Uint8Array((hexString.match(/.{1,2}/g) ?? []).map(byte => parseInt(byte, 16))).buffer;
+}
+
 const identitySec256 = (Secp256k1KeyIdentity.fromSecretKey(pemfile.decode(
   `
   -----BEGIN EC PRIVATE KEY-----
@@ -24,12 +28,9 @@ const identitySec256 = (Secp256k1KeyIdentity.fromSecretKey(pemfile.decode(
   ).slice(7, 39))
 );
 
-// Copied from https://github.com/dfinity/sdk/blob/master/docs/cli-reference/dfx-nns.md#examples-1
-const base64ToUInt8Array = (base64String) => Buffer.from(base64String, 'base64');
-
 const identityEd25 = Ed25519KeyIdentity.fromKeyPair(
-  base64ToUInt8Array("Uu8wv55BKmk9ZErr6OIt5XR1kpEGXcOSOC1OYzrAwuk="),
-  base64ToUInt8Array("N3HB8Hh2PrWqhWH2Qqgr1vbU9T3gb1zgdBD8ZOdlQnVS7zC/nkEqaT1kSuvo4i3ldHWSkQZdw5I4LU5jOsDC6Q==")
+  fromHexString("52EF30BF9E412A693D644AEBE8E22DE574759291065DC392382D4E633AC0C2E9"),
+  fromHexString("3771C1F078763EB5AA8561F642A82BD6F6D4F53DE06F5CE07410FC64E765427552EF30BF9E412A693D644AEBE8E22DE574759291065DC392382D4E633AC0C2E9")
 );
 
 async function getActor(identity = Secp256k1KeyIdentity.generate()) {
