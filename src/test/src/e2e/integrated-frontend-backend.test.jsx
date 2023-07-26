@@ -27,7 +27,7 @@ describe(`E2E Tests of Integrating the Backend-Frontend via the useDedicatedWork
       // Render the hook with the web worker module used by the frontend connected to the reducer:
       const { result: { current } } = renderHook(() => useDedicatedWorker(import.meta.env.OG_WORKER_PATH, webworkerUiCallbackIeDispatch));
       // Initialize the canisterMetadata:
-      act(() => current.postMessage({ type: actionTypes.QUERY, key: stateKeys.canisterMetadata }));
+      act(() => current.postMessage({ type: actionTypes.QUERY, key: stateKeys.canisterMetadata, args: { principal: 'test' } }));
       await waitFor(() => {
         // Check the canisterMetadata state set correctly:
         expect(reducerState.canisterMetadata).toEqual({

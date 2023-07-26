@@ -30,13 +30,7 @@ async function getActor(anonymous = false) {
       throw new Error(e);
     }
   };
-  const actor = Actor.createActor(idlFactory, { agent, canisterId });
-  // Used to create idb cache key. 
-  const principal = identity ? identity.getPrincipal().toString() : "anon";
-  return {
-    actor,
-    principal
-  }
+  return Actor.createActor(idlFactory, { agent, canisterId });
 };
 
 async function getIdentity_() {

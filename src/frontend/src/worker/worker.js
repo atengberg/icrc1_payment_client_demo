@@ -17,9 +17,9 @@ let syncTimer;
 
 function onMessage ({ data }) {
   const { type, key, args = null } = data;
-  console.info(`WebWorker::self.onmessage() data ${JSON.stringify({ data , key, args })}`)
   handleMessage({ type, key, args });
 };
+
 self.addEventListener("message", onMessage);
 
 function handleMessage({
@@ -29,40 +29,43 @@ function handleMessage({
 } = {}) {
   console.log(`handleMessage type[${type}]\t\tkey[${key}]\t\t\targs[${args}]`)
   switch (type) {
-    case actionTypes.QUERY: 
+    case actionTypes.QUERY: {
+      // Used to create cache key.
+      const { principal } = args;
       switch (key) {
         case stateKeys.canisterMetadata: {
-          const call = async () => {
+          Promise.all([ 
             queryCanister({
               anonymous: true,
+              principal,
               method: 'get_icrc1_token_canister_metadata',
               key,
-              responseHandler: parseTokenCanisterMetadataResponse
-            });
-          }
-          Promise.all([ call(), checkCache({ key }) ]);
+              responseHandler: parseTokenCanisterMetadataResponse,
+            }), 
+            checkCache({ key, principal }) 
+          ]);
           return;
         };
-        case stateKeys.accountStateSync: 
-          Promise.all([ 
-            pollingCall(), 
-            checkCache({ key: stateKeys.accountPayments }),
-            checkCache({ key: stateKeys.accountBalance })
-          ]);
+        case stateKeys.accountStateSync: {
           //syncTimer = setInterval(() => syncCall(args?.testing), pollPeriodMs);
+          Promise.all([ 
+            checkCache({ key: stateKeys.accountPayments, principal }),
+            checkCache({ key: stateKeys.accountBalance, principal }),
+            pollingCall(principal),
+          ]);
           return;
+        };
       }
       break;
+    };
     case actionTypes.UPDATE: {
       switch (key) {
         case stateKeys.payment: {
-          setTimeout(() => {
-            sendPaymentCall({ args, key });
-          }, (import.meta.env.MODE_IS_TESTING ? 10000 : 0));
+          sendPaymentCall({ args, key });
           return;
         };
       };
-      break;
+      break;;
     };
     case actionTypes.RESET:
       clearInterval(syncTimer);
@@ -73,24 +76,14 @@ function handleMessage({
   throw new Error('WebWorker::handlemessage called without an agreeable type or key!' + JSON.stringify({ type, key, args }));
 }
 
-// Mostly naive caching in indexdb (key is concatenated with caller's principal).
-async function checkCache({ key }) {
-  if (import.meta.env.MODE_IS_TESTING) return;
-  const { get } = await import("idb-keyval");
-  const cached = await get(key);
-  if (cached) {
-    const result = JSON.parse(cached);
-    self.postMessage({ type: actionTypes.VALUE, key, payload: { ...result.ok }});
-  }
-};
-
 async function queryCanister({ 
-  anonymous, 
+  anonymous = false,
+  principal,
   method,
   key,
   responseHandler,
 }) {
-  const { actor, principal } = await getActor(anonymous);
+  const actor = await getActor(anonymous);
   const response = await actor[method]();
   const result = responseHandler(response);
   if (result?.ok) {
@@ -99,22 +92,21 @@ async function queryCanister({
     self.postMessage({ type: actionTypes.ERROR, key, payload: { ...result.err }});
   }
   // Stow in the cache if indexdb is available.
-  if (!import.meta.env.MODE_IS_TESTING) {
-    const { set } = await import("idb-keyval");
-    await set(`key-${principal}`, JSON.stringify(result));
+  if (result?.ok) {
+    await cacheResult({ key, principal, result })
   }
 };
 
-async function pollingCall() {
+function pollingCall(principal) {
   Promise.all([
     queryCanister({
-      anonymous: false,
+      principal,
       method: 'get_account_balance',
       key: stateKeys.accountBalance,
       responseHandler: parseAccountBalanceResponse
     }),
     queryCanister({
-      anonymous: false,
+      principal,
       method: 'get_account_payments',
       key: stateKeys.accountPayments,
       responseHandler: parseAccountPaymentsResponse
@@ -127,13 +119,35 @@ async function sendPaymentCall({ key, args }) {
   const response = await actor.send_payment(args);
   const { result, payment: p } = response;
   const payment = parsePayment(p);
-  self.postMessage({ type: actionTypes.UPDATE, key, payload: { payment }});
+  self.postMessage({ type: actionTypes.UPDATE, key, payload: { payment } });
   if (result?.err) {
     setTimeout(() => {
       self.postMessage({ type: actionTypes.ERROR, key, payload: { ...result.err } });
     }, 11);
   };
 };
+
+// Mostly naive caching in indexdb (key is concatenated with caller's principal).
+async function checkCache({ key, principal }) {
+  if (!import.meta.env?.MODE_IS_TESTING) {
+    // Dynamic import used here since idb won't be available in testing.
+    const { get } = await import("idb-keyval");
+    const cached = await get(getCacheKey({ key, principal }));
+    if (cached) {
+      const result = JSON.parse(cached);
+      self.postMessage({ type: actionTypes.VALUE, key, payload: { ...result.ok }});
+    }
+  };
+};
+
+async function cacheResult({ key, principal, result }) {
+  if (!import.meta.env?.MODE_IS_TESTING) {
+    const { set } = await import("idb-keyval");
+    await set(getCacheKey({ key, principal }), JSON.stringify(result));
+  }
+};
+
+function getCacheKey({ key, principal }) { return `${key}-${principal}`; }
 
 self.addEventListener("error", e => {
   //const { lineno, filename, message } = e;
