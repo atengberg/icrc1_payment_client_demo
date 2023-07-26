@@ -19,7 +19,6 @@ const importAsMetaEnvVars = fs.readFileSync(path
     return {
       ...acc,
       [`import.meta.env.${kv[0]}`]: JSON.stringify(kv[1]),
-      [`process.env.${kv[0]}`]: JSON.stringify(kv[1])
     };
   } else {
     return acc;
@@ -43,16 +42,18 @@ export default defineConfig({
     ...importAsMetaEnvVars,
     'import.meta.env.WORKER_PATH': JSON.stringify(workerPath),
     'import.meta.env.WORKER_HELLO_WORLD': JSON.stringify('Hello from the Web Worker unit test!'),
-    'import.meta.env.OG_WORKER_PATH': JSON.stringify(originalWorkerPath)
+    'import.meta.env.OG_WORKER_PATH': JSON.stringify(originalWorkerPath),
+    'import.meta.env.MODE_IS_TESTING': JSON.stringify(true),
+    'import.meta.env.DISABLE_INDEXEDB': JSON.stringify(true),
   },
   test: {
-    globals:true, 
     setupFiles: ['./setup-teardown-hooks.js'],
     environment: 'jsdom',
+    threads: false,
     testTimeout: 15000,
     include: [
-      'src/e2e/*.test.jsx',
-      //'src/unit/frontend/*.test.js',
+      'src/e2e/*.test.*',
+      'src/unit/frontend/*.test.*',
     ],
   }
 });

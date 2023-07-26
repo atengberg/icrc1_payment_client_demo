@@ -42,7 +42,7 @@ async function handleMessage({
           });
         };
         case stateKeys.accountStateSync: {
-          if (import.meta.env.DISABLE_INDEXEDB) {
+          if (!import.meta.env.DISABLE_INDEXEDB) {
             // Currently tests do not include polling. 
             syncTimer = setInterval(() => pollingCall(principal, pollPeriodMs));
           }

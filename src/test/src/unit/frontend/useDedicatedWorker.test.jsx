@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 
 // Required for the useDedicatedWorker hook to be capable of loading the worker's module script. 
 import '@vitest/web-worker';

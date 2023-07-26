@@ -1,6 +1,7 @@
 // Need to manually polyfill in WebWorker's context to make candid Nat's transferrable.
 // Good reason for using Typescript instead...
 BigInt.prototype.toJSON = function () { return this.toString(); };
+
 import { actionTypes } from "../utils/enums.js";
 // Encapsulated utils so integrated testing can be done:
 import { 
@@ -20,7 +21,7 @@ if (import.meta.env.DISABLE_INDEXEDB) {
 
 function onMessage ({ data }) {
   const { type, key, args = null } = data;
-  console.info(`WebWorker::self.onmessage() data ${JSON.stringify({ data , key, args })}`)
+  //console.info(`WebWorker::self.onmessage() data ${JSON.stringify({ data , key, args })}`)
   handleMessage({ type, key, args });
   if (type === actionTypes.RESET) {
     setUiCallback(null);

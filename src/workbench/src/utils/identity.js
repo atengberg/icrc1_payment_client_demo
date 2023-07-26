@@ -6,6 +6,7 @@ import { Ed25519KeyIdentity } from '@dfinity/identity';
 import { Principal } from '@dfinity/principal';
 import { idlFactory } from "../../../declarations/backend/backend.did.js";
 import pemfile from 'pem-file';
+import fetch from 'isomorphic-fetch';
 
 const canisterId = process.env.CANISTER_ID_BACKEND
 const host = `http://127.0.0.1:4943`;
@@ -34,7 +35,8 @@ const identityEd25 = Ed25519KeyIdentity.fromKeyPair(
 async function getActor(identity = Secp256k1KeyIdentity.generate()) {
   const agent = new HttpAgent({
     identity, 
-    host
+    host,
+    fetch
   });
   await agent.fetchRootKey().catch((err) => {
     console.warn("Unable to fetch root key. Check to ensure that your local replica is running!");
@@ -42,7 +44,7 @@ async function getActor(identity = Secp256k1KeyIdentity.generate()) {
   });
   return Actor.createActor(idlFactory, {
       agent, 
-      canisterId
+      canisterId,
     }
   );
 };

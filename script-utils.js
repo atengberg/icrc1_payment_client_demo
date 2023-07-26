@@ -3,10 +3,6 @@ import { oneLine } from 'common-tags';
 import { spawnSync } from 'child_process';
 
 
-function appendModeIsTestingEnvVar(isTesting = false) {
-  fs.appendFileSync('.env', `\nMODE_IS_TESTING=${isTesting}`, { encoding: 'utf8' });
-}
-
 function checkFilesExists(files = []) {
   try {
     return files.reduce((acc, cur) => fs.existsSync(cur) && acc, true);
@@ -92,5 +88,4 @@ export {
   getCanisterId,
   getICRC1TokenCanisterDfxDeploymentCmd,
   getICRC1TransferDfxCmd,
-  appendModeIsTestingEnvVar
 };

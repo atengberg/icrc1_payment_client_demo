@@ -1,3 +1,5 @@
+// @vitest-environment node
+
 import { describe, expect, it } from 'vitest';
 import * as utils from '@/utils/utils.js';
 import { statusEnum } from '@/utils/enums.js';

@@ -69,8 +69,9 @@ describe(`E2E Testing of the Backend Integrated with Web Woker and Reducer (same
     expect(reducerState.currentBalanceBaseUnits).toBe(10000000000n);
     expect(reducerState.payments).toStrictEqual([]);
     expect(reducerState.createdCount).toBe(0n);
-  });
+  }, 10000);
 
+  
   // Sending a payment:
   it('should trigger the handleMessage worker util to initiate send_payment, parse the response and update the reducer state', async () => {
     // Simulate when the SendPaymentForm successfully calls back to the SendPayment page to the CanisterProvider when a new payment is to be sent.
@@ -140,4 +141,5 @@ describe(`E2E Testing of the Backend Integrated with Web Woker and Reducer (same
     // Finally double check the payment view model was updated (not duplicated):
     expect(reducerState.payments.length).toBe(1);
   });
+
 });

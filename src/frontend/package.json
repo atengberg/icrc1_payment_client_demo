@@ -13,7 +13,6 @@
     "@vitejs/plugin-react": "^4.0.0",
     "autoprefixer": "^10.4.14",
     "clsx": "^1.2.1",
-    "cross-fetch": "^4.0.0",
     "eslint": "^8.42.0",
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
@@ -36,6 +35,7 @@
     "buffer": "^6.0.3",
     "formik": "^2.4.2",
     "idb-keyval": "^6.2.1",
+    "isomorphic-fetch": "^3.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-qr-code": "^2.0.11",
@@ -48,7 +48,6 @@
   },
   "browserslist": [
     "last 2 chrome version",
-    "last 2 firefox version",
     "last 2 safari version",
     "last 2 edge version"
   ]

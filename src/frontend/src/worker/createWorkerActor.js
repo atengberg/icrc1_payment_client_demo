@@ -1,7 +1,7 @@
 import { Actor, HttpAgent } from "@dfinity/agent";
 import { Ed25519KeyIdentity } from '@dfinity/identity';
 import { idlFactory } from '../../../declarations/backend/backend.did.js';
-import fetch from 'cross-fetch';
+import fetch from 'isomorphic-fetch';
 
 //https://github.com/dfinity/agent-js/blob/main/packages/identity/src/identity/ed25519.ts
 function fromHexString(hexString)  {
@@ -30,13 +30,7 @@ async function getActor(anonymous = false) {
       throw new Error(e);
     }
   };
-  const actor = Actor.createActor(idlFactory, { agent, canisterId });
-  // Used to create idb cache key. 
-  const principal = identity ? identity.getPrincipal().toString() : "anon";
-  return {
-    actor,
-    principal
-  }
+  return Actor.createActor(idlFactory, { agent, canisterId });
 };
 
 async function getIdentity_() {

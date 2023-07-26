@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest';
+// @vitest-environment node
 
+import { describe, expect, it } from 'vitest';
 import ellipsizeICRC1Address from '@/utils/ellipsize-ICRC1-address.js';
 
 describe("Test ellipsizeICRC1Address util", () => {
