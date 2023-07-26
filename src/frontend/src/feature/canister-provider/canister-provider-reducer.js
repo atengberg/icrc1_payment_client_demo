@@ -13,7 +13,7 @@ const initReducerState = {
 };
 
 const reducer = (state, { type, key, payload }) => {
-  console.log(`CanisterProvider reducer dispatch called with ${JSON.stringify({ type, payload, key})}`);
+  //console.log(`CanisterProvider reducer dispatch called with ${JSON.stringify({ type, payload, key})}`);
   switch (type) {
     case actionTypes.INITIALIZED: {
       const { initialized } = state;
@@ -48,7 +48,10 @@ const reducer = (state, { type, key, payload }) => {
       };
     }
     case actionTypes.ERROR: {
-      // Todo 
+      // Note the only errors actually used are those of failed payments, though
+      // the web worker does pass errors here, could use nested like initialized,
+      // ie: errors[key] = payload and then have a useEffect that checks if errors
+      // present in the state (to show a modal and dismiss them).
       return {
         ...state,
       };
