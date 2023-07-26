@@ -1,16 +1,14 @@
-import initialize from "./init.js";
-initialize();
+
 
 import { Actor, HttpAgent } from "@dfinity/agent";
 import { Secp256k1KeyIdentity } from '@dfinity/identity-secp256k1';
 import { Ed25519KeyIdentity } from '@dfinity/identity';
 import { Principal } from '@dfinity/principal';
 import { idlFactory } from "../../../declarations/backend/backend.did.js";
-import fetch from 'isomorphic-fetch';
 import pemfile from 'pem-file';
 
 const canisterId = process.env.CANISTER_ID_BACKEND
-const host = `http://localhost:4943`;
+const host = `http://127.0.0.1:4943`;
 
 function fromHexString(hexString)  {
   return new Uint8Array((hexString.match(/.{1,2}/g) ?? []).map(byte => parseInt(byte, 16))).buffer;
@@ -35,7 +33,6 @@ const identityEd25 = Ed25519KeyIdentity.fromKeyPair(
 
 async function getActor(identity = Secp256k1KeyIdentity.generate()) {
   const agent = new HttpAgent({
-    fetch,
     identity, 
     host
   });

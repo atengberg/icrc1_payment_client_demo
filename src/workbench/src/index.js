@@ -1,3 +1,8 @@
+// Load the environmental variables:
+import initialize from "./src/init.js";
+initialize();
+
+// Identity utils:
 import {
   actorEd25,
   actorSec256,
@@ -7,6 +12,7 @@ import {
   getActorByIdentity,
   getRandomIdentity,
 } from "./utils/identity.js";
+
 import chalk from 'chalk';
 import * as utils from "./utils/utils.js";
 import { generateIncrementedLengthICRC1EncodedAddresses } from './utils/extra.js';
