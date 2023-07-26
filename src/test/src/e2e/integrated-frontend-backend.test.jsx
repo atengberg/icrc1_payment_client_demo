@@ -1,6 +1,5 @@
 // Required for the useDedicatedWorker hook to be capable of loading the worker's module script. 
 import '@vitest/web-worker';
-// Note, easiest way of handling web worker's file path resolution was to define it in config. 
 import { describe, expect, it } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import useDedicatedWorker from '@/hooks/useDedicatedWorker';
@@ -49,13 +48,12 @@ describe(`E2E Tests of Integrating the Backend-Frontend via the useDedicatedWork
       });
     });
 
-
-    // Could not get web worker createWorkerActor with preset authenticated identity to work in this environment (tried different identities, polyfills, etc).
-    // Specifically, the actor would be created but when calling one of its methods (get_account_balance/get_account_payments/etc) the test would throw:
+    // NOTE: jsdom environment does not work out of the box with authenticated actors!  
+    // Tthe actor would be created but when calling one of its methods (get_account_balance/get_account_payments/etc) the test would throw:
     // The secp256k identity would result in `invalid input type`.
     // The ed25519 identity would result in `400 (Bad Request) Body: Could not parse body as read request: invalid type: map, expected byte array` 
-    // So the rest of the E2E tests are done directly on the backend canister passing the parsed results to the reducer (but not useDedicatedWorker) for test evaluation.
-    /*
+    // So the rest of the E2E tests are done in node enviroment (see integrated-backend.test.jsx).
+    /* Had there been more time to figure out how to configure jsdom, would have continued this here: 
     it(`should trigger the web worker to call and parse and callback to the reducer the init test account state`, async () => {
       let reducerState = initReducerState;
       const webworkerUiCallbackIeDispatch = data => { reducerState = reducer(reducerState, data) };
@@ -76,6 +74,5 @@ describe(`E2E Tests of Integrating the Backend-Frontend via the useDedicatedWork
       });
     });
     */
-
   });
 });
