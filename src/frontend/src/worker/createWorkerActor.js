@@ -1,4 +1,3 @@
-import fetch from 'isomorphic-fetch';
 import { Actor, HttpAgent } from "@dfinity/agent";
 import { Ed25519KeyIdentity } from '@dfinity/identity';
 import { idlFactory } from '../../../declarations/backend/backend.did.js';
@@ -17,7 +16,6 @@ async function getActor(anonymous = false) {
   const isProduction = (import.meta.env.DFX_NETWORK === 'ic');
   const host = isProduction ? `https://icp0.io` : `http://127.0.0.1:4943`;
   const agent = new HttpAgent({
-    fetch,
     identity, 
     host
   });
