@@ -33,7 +33,7 @@
     "postinstall": "mops install"
   },
   "engines": {
-    "node": "^12 || ^14 || ^16 || ^18"
+    "node": "^18"
   },
   "dependencies": {
     "@dfinity/agent": "^0.17.0",

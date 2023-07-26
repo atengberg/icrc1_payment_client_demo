@@ -35,7 +35,6 @@
     "dotenv": "^16.3.1",
     "eslint": "^8.42.0",
     "idb-keyval": "^6.2.1",
-    "isomorphic-fetch": "^3.0.0",
     "jsdom": "^22.1.0",
     "lorem-ipsum": "^2.0.8",
     "pem-file": "^1.0.1",
