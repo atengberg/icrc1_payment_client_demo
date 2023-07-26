@@ -1,5 +1,4 @@
 import { useMemo, createContext, useReducer, useCallback, useEffect } from 'react';
-import useInternetIdentity from '../../hooks/useInternetIdentity';
 import useDedicatedWorker from '../../hooks/useDedicatedWorker';
 import Spinner from '../../components/Spinner';
 import reducer, { initReducerState } from "./canister-provider-reducer";

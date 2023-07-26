@@ -6,6 +6,9 @@ import CanisterProvider from './feature/canister-provider/CanisterProvider.jsx';
 import App from './App.jsx';
 import './index.css';
 
+
+console.log(JSON.stringify({ isTesting: import.meta.env.MODE_IS_TESTING }))
+
 // Typescript should mean this is unnecessary.
 global.BigInt.prototype.toJSON = function () { return this.toString() };
 
@@ -55,7 +58,7 @@ const Dapp = () => {
 };
 
 const dapp = (
-  import.meta.env.MODE_IS_TESTING ? <TestingDapp /> : <Dapp />
+  import.meta.env?.MODE_IS_TESTING ? <TestingDapp /> : <Dapp />
 );
 
 const notSupported = (

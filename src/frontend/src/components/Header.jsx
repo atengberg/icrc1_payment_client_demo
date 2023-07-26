@@ -21,8 +21,6 @@ const Header = () => {
   const { pathname } = useLocation();
   const [currentPage, setCurrentPage] = useState(pagesEnum.LANDING);
 
-
-
   useEffect(() => {
     if (isAuthenticated) {
       if (pathname === '/payments') {
@@ -110,14 +108,14 @@ const Header = () => {
 };
 
 const DevMode = ({ auth: { isAuthenticated, login, logout } }) => {
-  if (!(import.meta.env.MODE_IS_TESTING)) {
+  if (!(import.meta.env?.MODE_IS_TESTING)) {
     return null;
   } else {
     return (
       <div className="themed-font-color z-[99]">
           {isAuthenticated 
           ? <RiBug2Fill className="h-12 w-12" onClick={() => logout()}/>
-          : <RiBug2Line className="h-12 w-12" onClick={() =>  login()}/>
+          : <RiBug2Line className="h-12 w-12" onClick={() => login()}/>
           }
       </div>
     );

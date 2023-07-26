@@ -30,7 +30,7 @@ async function getActor(anonymous = false) {
       throw new Error(e);
     }
   };
-  const actor = Actor.createActor(idlFactory, { agent, canisterId, identity });
+  const actor = Actor.createActor(idlFactory, { agent, canisterId });
   // Used to create idb cache key. 
   const principal = identity ? identity.getPrincipal().toString() : "anon";
   return {
@@ -40,7 +40,7 @@ async function getActor(anonymous = false) {
 };
 
 async function getIdentity_() {
-  if (import.meta.env.MODE_IS_TESTING) {
+  if (import.meta.env?.MODE_IS_TESTING) {
     return Ed25519KeyIdentity.fromKeyPair(
       fromHexString("52EF30BF9E412A693D644AEBE8E22DE574759291065DC392382D4E633AC0C2E9"),
       fromHexString("3771C1F078763EB5AA8561F642A82BD6F6D4F53DE06F5CE07410FC64E765427552EF30BF9E412A693D644AEBE8E22DE574759291065DC392382D4E633AC0C2E9"))
