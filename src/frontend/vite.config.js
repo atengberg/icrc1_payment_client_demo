@@ -10,8 +10,9 @@ export default defineConfig({
     EnvironmentPlugin("all", { prefix: "CANISTER_", defineOn: "import.meta.env" }),
     // Spreads all the envars from .env prefixed with "DFX_" onto import.meta.env: 
     EnvironmentPlugin("all", { prefix: "DFX_", defineOn: "import.meta.env" }),
-    // Shows a "Debug Bug" next to brand in nav bar that logs in/out with test identity (including webworker actor):
-    EnvironmentPlugin({ 'MODE_IS_TESTING': true}, { defineOn: "import.meta.env" }),
+    // Puts the value of the env var key MODE_IS_TESTING from .env onto import.meta.env,
+    // (Has the UI display a bug action bar icon to toggle auth, forces auth'd identity to be predefined test identity):
+    EnvironmentPlugin(["MODE_IS_TESTING"], { defineOn: "import.meta.env" }),
   ],
   build: {
     outDir: "dist/",

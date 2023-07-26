@@ -9,6 +9,8 @@ const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 // Being in a separate directory seemed to interfere with original
 // config's environmental variables loading, so import the .env
 // and parse it to spread on define (below) so it'll be available.
+// This is another way of making DFX_NETWORK, and other env vars
+// available. 
 const importAsMetaEnvVars = fs.readFileSync(path
   .join(__dirname, '..', '..', '.env'), { encoding: 'utf8' })
   .split('\n').reduce((acc, cur) => {
@@ -37,9 +39,8 @@ export default defineConfig({
     }
   },
   define: {
-    // (Also an alternative example to using EnvironmentalPlugin): 
+    // (Also serves as alternative example to using EnvironmentalPlugin): 
     ...importAsMetaEnvVars,
-    'import.meta.env.MODE_IS_TESTING': JSON.stringify(true),
     'import.meta.env.WORKER_PATH': JSON.stringify(workerPath),
     'import.meta.env.WORKER_HELLO_WORLD': JSON.stringify('Hello from the Web Worker unit test!'),
     'import.meta.env.OG_WORKER_PATH': JSON.stringify(originalWorkerPath)
