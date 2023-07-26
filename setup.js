@@ -9,7 +9,6 @@ import {
   getCanisterId,
   getICRC1TokenCanisterDfxDeploymentCmd,
   getICRC1TransferDfxCmd,
-  appendModeIsTestingEnvVar
 } from './script-utils.js';
 
 // Load the environmental variables from the .env file:
@@ -81,12 +80,6 @@ async function run(testing = false) {
   } catch (e) {
     throw new Error(`While transferring to current user's subaccount, caught error ${e.toString()}`);
   };
-
-  try {
-    appendModeIsTestingEnvVar(testing);
-  } catch (e) {
-    throw new Error(`Could not append MODE_IS_TESTING env var due to error ${e}`);
-  }
 
   if (testing) {
     // nns ed25519:
