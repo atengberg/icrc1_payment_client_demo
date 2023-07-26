@@ -10,12 +10,9 @@ import { stateKeys, actionTypes } from '@/utils/enums.js';
 describe(`E2E Tests of Integrating the Backend-Frontend via the useDedicatedWorker Calling Back to the CanisterProvider's Reducer`, () => {
 
   describe(`Test the Frontend Initializion with the Backend`, () => {
-    // Recursively pass the reducer state (done in the next tests):
-    let reducerState = initReducerState;
-    // Acts as the actual CanisterProvider dispatch passed to useDedicatedWorker: 
-    const quoteUnquoteMockDispatch = data => { reducerState = reducer(reducerState, data) };
 
     it('should render the hook with the web worker module used by the frontend correctly initialized and connected to the reducer', () => {
+      let reducerState = initReducerState;
       // Confirm the uninitialized state is null:
       expect(reducerState.canisterMetadata).toBeNull();
       expect(reducerState.payments).toBeNull();
@@ -25,8 +22,10 @@ describe(`E2E Tests of Integrating the Backend-Frontend via the useDedicatedWork
     });
 
     it(`should trigger the web worker to call and parse and callback to the reducer for the icrc1 token canister metadata state`, async () => {
+      let reducerState = initReducerState;
+      const webworkerUiCallbackIeDispatch = data => { reducerState = reducer(reducerState, data) };
       // Render the hook with the web worker module used by the frontend connected to the reducer:
-      const { result: { current } } = renderHook(() => useDedicatedWorker(import.meta.env.OG_WORKER_PATH, quoteUnquoteMockDispatch));
+      const { result: { current } } = renderHook(() => useDedicatedWorker(import.meta.env.OG_WORKER_PATH, webworkerUiCallbackIeDispatch));
       // Initialize the canisterMetadata:
       act(() => current.postMessage({ type: actionTypes.QUERY, key: stateKeys.canisterMetadata }));
       await waitFor(() => {
@@ -50,10 +49,33 @@ describe(`E2E Tests of Integrating the Backend-Frontend via the useDedicatedWork
       });
     });
 
-    // Could not get web worker createWorkerActor with preset authenticated identity to work in this environment.
+
+    // Could not get web worker createWorkerActor with preset authenticated identity to work in this environment (tried different identities, polyfills, etc).
     // Specifically, the actor would be created but when calling one of its methods (get_account_balance/get_account_payments/etc) the test would throw:
     // The secp256k identity would result in `invalid input type`.
     // The ed25519 identity would result in `400 (Bad Request) Body: Could not parse body as read request: invalid type: map, expected byte array` 
     // So the rest of the E2E tests are done directly on the backend canister passing the parsed results to the reducer (but not useDedicatedWorker) for test evaluation.
+    /*
+    it(`should trigger the web worker to call and parse and callback to the reducer the init test account state`, async () => {
+      let reducerState = initReducerState;
+      const webworkerUiCallbackIeDispatch = data => { reducerState = reducer(reducerState, data) };
+      const { result: { current } } = renderHook(() => useDedicatedWorker(import.meta.env.OG_WORKER_PATH, webworkerUiCallbackIeDispatch));
+      act(() => current.postMessage({ type: actionTypes.QUERY, key: stateKeys.canisterMetadata }));
+      // Initialize the account state sync (balance, address, payments):
+      act(() => current.postMessage({ type: actionTypes.QUERY, key: stateKeys.accountStateSync }))
+      await waitFor(() => {
+        // Check the canisterMetadata state set correctly:
+        expect(reducerState.canisterMetadata.decimals).toBe(8n);
+        // Also confirm the rest of the state has been initialized:
+        expect(reducerState.payments).toBe([]);
+        expect(reducerState.createdCount).toBe(0);
+        expect(reducerState.accountAddress).toBe('be2us-64aaa-aaaaa-qaabq-cai-mnnzrpq.4e9ece1d5903f7a012e4d6e98ec262de481149dfa156812985b6362b1795b69a');
+        expect(reducerState.currentBalanceBaseUnits).toBe(10000000000n);
+      }, { 
+        timeout: 2500 // waitFor requires its own timeout set.
+      });
+    });
+    */
+
   });
 });
