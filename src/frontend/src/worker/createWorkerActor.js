@@ -1,6 +1,7 @@
 import { Actor, HttpAgent } from "@dfinity/agent";
 import { Ed25519KeyIdentity } from '@dfinity/identity';
 import { idlFactory } from '../../../declarations/backend/backend.did.js';
+import fetch from 'cross-fetch';
 
 //https://github.com/dfinity/agent-js/blob/main/packages/identity/src/identity/ed25519.ts
 function fromHexString(hexString)  {
@@ -17,7 +18,8 @@ async function getActor(anonymous = false) {
   const host = isProduction ? `https://icp0.io` : `http://127.0.0.1:4943`;
   const agent = new HttpAgent({
     identity, 
-    host
+    host,
+    fetch
   });
   if (!isProduction) {
     try {
@@ -28,7 +30,13 @@ async function getActor(anonymous = false) {
       throw new Error(e);
     }
   };
-  return Actor.createActor(idlFactory, { agent, canisterId });
+  const actor = Actor.createActor(idlFactory, { agent, canisterId });
+  // Used to create idb cache key. 
+  const principal = identity ? identity.getPrincipal().toString() : "anon";
+  return {
+    actor,
+    principal
+  }
 };
 
 async function getIdentity_() {

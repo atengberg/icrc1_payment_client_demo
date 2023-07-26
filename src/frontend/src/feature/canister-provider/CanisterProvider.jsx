@@ -51,9 +51,7 @@ const CanisterProvider = ({
   const {
     isAuthenticated,
     login,
-    logout,
-    // getPrincipal used to create cache key in worker:
-    getPrincipal
+    logout
   } = auth;
 
   // Note the clientPaymentId is actually used (since it's the UI). 
@@ -83,19 +81,16 @@ const CanisterProvider = ({
     getPaymentById,
   ]);
 
-  // Passed to the worker for checking the ibd cache:
-  const principal = getPrincipal();
-
   // Initializes canister metadata:
   useEffect(() => {
     if (!state.initialized.canisterMetadata) {
       if (!state.canisterMetadata) {
         const key = stateKeys.canisterMetadata;
         dispatch({ type: actionTypes.INITIALIZED, key, payload: true });
-        postMessage({ type: actionTypes.QUERY, key, args: { principal } });
+        postMessage({ type: actionTypes.QUERY, key });
       }
     }
-  }, [state, postMessage, principal ]);
+  }, [state, postMessage]);
 
   // Initializes account state sync / backend polling:
   useEffect(() => {
@@ -104,11 +99,11 @@ const CanisterProvider = ({
         if (!state.payments) {
           const key = stateKeys.accountStateSync;
           dispatch({ type: actionTypes.INITIALIZED, key, payload: true });
-          postMessage({ type: actionTypes.QUERY, key, args: { principal } });
+          postMessage({ type: actionTypes.QUERY, key });
         }
       }
     }
-  }, [isAuthenticated, state, postMessage, principal ]);
+  }, [isAuthenticated, state, postMessage]);
 
   // Show loading spinner while these are still being set, if authenticated:
   if (isAuthenticated) {

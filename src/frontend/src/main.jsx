@@ -6,6 +6,9 @@ import CanisterProvider from './feature/canister-provider/CanisterProvider.jsx';
 import App from './App.jsx';
 import './index.css';
 
+
+console.log(JSON.stringify({ isTesting: import.meta.env.MODE_IS_TESTING }))
+
 // Typescript should mean this is unnecessary.
 global.BigInt.prototype.toJSON = function () { return this.toString() };
 
@@ -13,7 +16,6 @@ global.BigInt.prototype.toJSON = function () { return this.toString() };
 const TestingDapp = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const auth = {
-    getPrincipal: () => 'jg6qm-uw64t-m6ppo-oluwn-ogr5j-dc5pm-lgy2p-eh6px-hebcd-5v73i-nqe',
     isAuthenticated,
     login: () => setIsAuthenticated(() => true),
     logout: () => setIsAuthenticated(() => false)
@@ -32,14 +34,22 @@ const TestingDapp = () => {
 
 const Dapp = () => {
   // Note the CanisterProvider will pass auth spread as part of its value.
-  const auth = useInternetIdentity({ 
+  const {
+    isAuthenticated,
+    login,
+    logout,
+  } = useInternetIdentity({ 
     onUserLoggedOut: () => window.location.reload() 
   });
   return (
     <Router>
       <CanisterProvider 
         workerFilePath="../worker/worker.js"
-        auth={auth} 
+        auth={{ 
+          isAuthenticated,
+          login,
+          logout
+        }} 
       >
         <App />
       </CanisterProvider>

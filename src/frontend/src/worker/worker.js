@@ -20,6 +20,7 @@ if (import.meta.env.DISABLE_INDEXEDB) {
 
 function onMessage ({ data }) {
   const { type, key, args = null } = data;
+  console.info(`WebWorker::self.onmessage() data ${JSON.stringify({ data , key, args })}`)
   handleMessage({ type, key, args });
   if (type === actionTypes.RESET) {
     setUiCallback(null);

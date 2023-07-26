@@ -13,14 +13,12 @@ const useInternetIdentity = ({
 } = {}) => {
 
   const authClientRef = useRef(null);
-  const principalRef = useRef(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const updateAuth = useCallback(async (client) => {
     if (!client) throw new Error("Cannot update auth state without an auth client!");
     const authenticated = await client.isAuthenticated();
     authClientRef.current = client;
-    principalRef.current = client.getIdentity().getPrincipal().toString();
     setIsAuthenticated(() => authenticated);
   }, []);
 
@@ -56,19 +54,13 @@ const useInternetIdentity = ({
     onUserLoggedOut
   ]);
 
-  const getPrincipal = useCallback(() => principalRef?.current ? principalRef.current : '2vxsx-fae', 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isAuthenticated]
-  );
-
   return useMemo(() => {
     return {
       login,
       logout,
-      isAuthenticated,
-      getPrincipal
+      isAuthenticated
     };
-  }, [login, logout, isAuthenticated, getPrincipal]);
+  }, [login, logout, isAuthenticated]);
 };
 
 export default useInternetIdentity;
