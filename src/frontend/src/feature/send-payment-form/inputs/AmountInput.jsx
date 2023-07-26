@@ -44,7 +44,7 @@ const AmountInput = ({
       }
     } else {
       if (newInput.length > 0) {
-        const matchMode = new RegExp(/^([0-9]+)((\.|,)([0-9]+)?)?$/, 'g');
+        const matchMode = new RegExp(/^([0-9]+)((\.)([0-9]+)?)?$/, 'g');
         if (matchMode.test(newInput)) {
           onInputValueChanged(e);
           updatePlaceholder(newInput);
