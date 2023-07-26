@@ -12,9 +12,7 @@ export default defineConfig({
     EnvironmentPlugin("all", { prefix: "DFX_", defineOn: "import.meta.env" }),
     // Puts the value of the env var key MODE_IS_TESTING from .env onto import.meta.env,
     // (Has the UI display a bug action bar icon to toggle auth, forces auth'd identity to be predefined test identity):
-    EnvironmentPlugin({'MODE_IS_TESTING': 'false'}, { defineOn: "import.meta.env" }),
-    // Caching makes a difference, and testing means window|self not necessarily available, so use flag:
-    EnvironmentPlugin({'DISABLE_INDEXEDB': 'false'}, { defineOn: "import.meta.env" }),
+    EnvironmentPlugin(["MODE_IS_TESTING"], { defineOn: "import.meta.env" }),
   ],
   build: {
     outDir: "dist/",
