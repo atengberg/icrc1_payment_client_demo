@@ -19,6 +19,7 @@ actionTypes['QUERY'] = 'QUERY';
 actionTypes['UPDATE'] = 'UPDATE';
 actionTypes['ERROR'] = 'ERROR';
 actionTypes['VALUE'] = 'VALUE';
+actionTypes['STOP'] = 'STOP';
 actionTypes['INITIALIZED'] = 'INITIALIZED';
 actionTypes['RESET'] = 'RESET';
 Object.freeze(actionTypes);

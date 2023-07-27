@@ -1,5 +1,5 @@
 // Load the environmental variables:
-import initialize from "./src/init.js";
+import initialize from "./utils/init.js";
 initialize();
 
 // Identity utils:
