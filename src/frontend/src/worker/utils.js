@@ -9,8 +9,6 @@ import {
 
 let uiCallback;
 function setUiCallback(callback) { uiCallback = callback };
-let cacheCallback;
-function setCacheCallback(callback) { cacheCallback = callback };
 
 // Could let user set period polling time (along with unit type preference).
 const pollPeriodMs = 10000;
@@ -19,34 +17,34 @@ let syncTimer;
 /*
   Important Notice: Returning in these methods is just for the sake of testing, 
   as the webworker uses the postMessage callback to update the state (as opposed
-  to awaiting a promise to fullfill).
+  to awaiting a promise to fullfill/returning some value).
 */
 
 async function handleMessage({
   type,
   key,
   args,
+  identity
 } = {}) {
   switch (type) {
     case actionTypes.QUERY: {
-      // Used to create cache key.
-      const { principal } = args;
       switch (key) {
         case stateKeys.canisterMetadata: {
           return await queryCanister({
-            anonymous: true,
-            principal,
+            identity,
             method: 'get_icrc1_token_canister_metadata',
             key,
             responseHandler: parseTokenCanisterMetadataResponse,
           });
         };
         case stateKeys.accountStateSync: {
-          if (!import.meta.env.DISABLE_INDEXEDB) {
+          // eslint-disable-next-line no-empty
+          if (args?.principal === "test-principal-cache-keypart") {
+          } else {
             // Currently tests do not include polling. 
-            syncTimer = setInterval(() => pollingCall(principal, pollPeriodMs));
+            syncTimer = setInterval(() => pollingCall(identity), pollPeriodMs);
           }
-          return await pollingCall(principal);
+          return await pollingCall(identity);
         };
       }
       break;
@@ -54,11 +52,12 @@ async function handleMessage({
     case actionTypes.UPDATE: {
       switch (key) {
         case stateKeys.payment: {
-          return await sendPaymentCall({ args, key });
+          return await sendPaymentCall({ args, key, identity });
         };
       };
       break;
     };
+    case actionTypes.STOP:
     case actionTypes.RESET:
       clearInterval(syncTimer);
       syncTimer = null;
@@ -68,35 +67,37 @@ async function handleMessage({
 }
 
 async function queryCanister({ 
-  anonymous = false,
-  principal,
+  identity,
   method,
   key,
   responseHandler,
 }) {
-  const actor = await getActor(anonymous);
-  const response = await actor[method]();
-  const result = responseHandler(response);
-  const fr = [];
-  if (result?.ok) {
-    fr[0] = selfPostMessage({ type: actionTypes.VALUE, key, payload: { ...result.ok }});
-    cacheCallback({ key, principal, result });
+  const actor = await getActor(identity);
+  if (actor) {
+    const response = await actor[method]();
+    const result = responseHandler(response);
+    const fr = [];
+    if (result?.ok) {
+      fr[0] = selfPostMessage({ type: actionTypes.VALUE, key, payload: { ...result.ok }});
+    } else {
+      fr[0] = selfPostMessage({ type: actionTypes.ERROR, key, payload: { ...result.err }});
+    }
+    return fr;
   } else {
-    fr[0] = selfPostMessage({ type: actionTypes.ERROR, key, payload: { ...result.err }});
+    //console.error(`Had no actor to query for ${key} ${method}`)
   }
-  return fr;
 };
 
-async function pollingCall(principal) {
+async function pollingCall(identity) {
   return await Promise.all([
     queryCanister({
-      principal,
+      identity,
       method: 'get_account_balance',
       key: stateKeys.accountBalance,
       responseHandler: parseAccountBalanceResponse
     }),
     queryCanister({
-      principal,
+      identity,
       method: 'get_account_payments',
       key: stateKeys.accountPayments,
       responseHandler: parseAccountPaymentsResponse
@@ -104,18 +105,22 @@ async function pollingCall(principal) {
   ]);
 };
 
-async function sendPaymentCall({ key, args }) {
-  const actor = await getActor(false);
-  const response = await actor.send_payment(args);
-  const { result, payment: p } = response;
-  const payment = parsePayment(p);
-  const fr = [];
-  fr[0] = selfPostMessage({ type: actionTypes.UPDATE, key, payload: { payment } });
-  if (result?.err) {
-    setTimeout(() => { selfPostMessage({ type: actionTypes.ERROR, key, payload: { ...result.err } }) }, 11);
-    fr[1] = { type: actionTypes.ERROR, key, payload: { ...result.err } };
-  };
-  return fr;
+async function sendPaymentCall({ key, args, identity }) {
+  const actor = await getActor(identity);
+  if (actor) {
+    const response = await actor.send_payment(args);
+    const { result, payment: p } = response;
+    const payment = parsePayment(p);
+    const fr = [];
+    fr[0] = selfPostMessage({ type: actionTypes.UPDATE, key, payload: { payment } });
+    if (result?.err) {
+      setTimeout(() => { selfPostMessage({ type: actionTypes.ERROR, key, payload: { ...result.err } }) }, 11);
+      fr[1] = { type: actionTypes.ERROR, key, payload: { ...result.err } };
+    };
+    return fr;
+  } else {
+    //console.error(`Had no actor to send payment`)
+  }
 };
 
 function selfPostMessage(args) {
@@ -124,4 +129,4 @@ function selfPostMessage(args) {
   return (args);
 };
 
-export { handleMessage, setUiCallback, setCacheCallback };
+export { handleMessage, setUiCallback };

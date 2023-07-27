@@ -7,7 +7,9 @@ const useDedicatedWorker = (workerModulePath, onMessageCallback) => {
   const workerRef = useRef(null);
   // Since we want the workerRef populated before the rest (and is already preloaded), useLayoutEffect is used. 
   useLayoutEffect(() => {
-    const w = new Worker(new URL(workerModulePath, import.meta.url), { type: 'module' });
+    //const w = new Worker(new URL(workerModulePath, import.meta.url), { type: 'module' });
+
+    const w = new Worker(new URL('../worker/worker.js', import.meta.url), { type: 'module' });
     w.addEventListener('message', ({ data }) => {
       if (onMessageCallback) {
         onMessageCallback(data);

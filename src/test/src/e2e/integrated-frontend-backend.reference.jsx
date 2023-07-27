@@ -1,6 +1,9 @@
 // @vitest-environment jsdom
 
-// Required for the useDedicatedWorker hook to be capable of loading the worker's module script. 
+// As original worker uses AuthClient + indexeddb (cacheing) removed this test. Here for reference of testing custom hooks. 
+// Note the test in this file is the first of integrated-backend.
+
+/*
 import '@vitest/web-worker';
 import { describe, expect, it } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
@@ -55,7 +58,7 @@ describe(`E2E Tests of Integrating the Backend-Frontend via the useDedicatedWork
     // The secp256k identity would result in `invalid input type`.
     // The ed25519 identity would result in `400 (Bad Request) Body: Could not parse body as read request: invalid type: map, expected byte array` 
     // So the rest of the E2E tests are done in node enviroment (see integrated-backend.test.jsx).
-    /* Had there been more time to figure out how to configure jsdom, would have continued this here: 
+     Had there been more time to figure out how to configure jsdom, would have continued this here: 
     it(`should trigger the web worker to call and parse and callback to the reducer the init test account state`, async () => {
       let reducerState = initReducerState;
       const webworkerUiCallbackIeDispatch = data => { reducerState = reducer(reducerState, data) };
@@ -75,6 +78,7 @@ describe(`E2E Tests of Integrating the Backend-Frontend via the useDedicatedWork
         timeout: 2500 // waitFor requires its own timeout set.
       });
     });
-    */
+    
   });
 });
+*/

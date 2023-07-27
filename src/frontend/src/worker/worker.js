@@ -1,61 +1,59 @@
-// Need to manually polyfill in WebWorker's context to make candid Nat's transferrable.
-// Good reason for using Typescript instead...
+// Required to polyfill BigInt since Nats must be serialized (good reason for using Typescript instead...):
 BigInt.prototype.toJSON = function () { return this.toString(); };
 
-import { actionTypes } from "../utils/enums.js";
-// Encapsulated utils so integrated testing can be done:
+import { AuthClient } from "@dfinity/auth-client"; 
+import { actionTypes, stateKeys } from "../utils/enums.js";
 import { 
   handleMessage, 
   setUiCallback, 
-  setCacheCallback 
 } from "./utils.js";
 
 self.addEventListener("message", onMessage);
 setUiCallback(args => self.postMessage(args));
 
-if (import.meta.env.DISABLE_INDEXEDB) {
-  setCacheCallback(args => args);
-} else {
-  setCacheCallback(args => cache(args));
-}
-
-function onMessage ({ data }) {
+async function onMessage ({ data }) {
   const { type, key, args = null } = data;
   //console.info(`WebWorker::self.onmessage() data ${JSON.stringify({ data , key, args })}`)
-  handleMessage({ type, key, args });
-  if (type === actionTypes.RESET) {
-    setUiCallback(null);
-    self.close();
-  } else if (type === actionTypes.QUERY) {
-    const { principal } = args;
-    checkCache({ key, principal });
-  }
-};
-
-// Mostly naive caching in indexdb (key is concatenated with caller's principal).
-async function checkCache({ key, principal }) {
-  if (import.meta.env.DISABLE_INDEXEDB) {
-    return;
-  } else {
-    const { get } = await import("idb-keyval");
-    const cached = await get(getCacheKey({ key, principal }));
-    if (cached) {
-      const result = JSON.parse(cached);
-      self.postMessage({ type: actionTypes.VALUE, key, payload: { ...result.ok }});
+  try {
+    // Since AuthClient not available in testing, pass the identity to the testable utils:
+    let identity = null;
+    if (type === actionTypes.STOP || type === actionTypes.RESET) {
+      // Do nothing since no identity required.
+    } else {
+      if (key === stateKeys.accountStateSync || key === stateKeys.payment) {
+        const id = await getIdentity();
+        if (!id) {
+          // Not authenticated so no point in processing. 
+          return;
+        } else {
+          identity = id;
+        }    
+      }
     }
+    handleMessage({ type, key, args, identity });
+    if (type === actionTypes.RESET) {
+      setUiCallback(null);
+      self.close();
+    }
+  } catch (e) {
+    console.error("caught web worker error")
+    console.log(e)
   }
 };
 
-async function cache({ key, principal, result }) {
-  if (import.meta.env.DISABLE_INDEXEDB) {
+async function getIdentity() {
+  const authClient = await AuthClient.create({
+    idleOptions: {
+      disableIdle: true,
+      disableDefaultIdleCallback: true,
+    }
+  });
+  const isAuthenticated = await authClient.isAuthenticated();
+  if (!isAuthenticated) {
     return;
-  } else {
-    const { set } = await import("idb-keyval");
-    await set(getCacheKey({ key, principal }), JSON.stringify(result));
   }
-};
-
-function getCacheKey({ key, principal }) { return `${key}-${principal}`; }
+  return authClient.getIdentity();
+}
 
 self.addEventListener("error", e => {
   //const { lineno, filename, message } = e;

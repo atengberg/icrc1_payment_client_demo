@@ -11,13 +11,14 @@ import {
   GameIconsTakeMyMoney,
   IonListCircle,
   RiBug2Fill,
-  RiBug2Line
+  RiBug2Line,
+  GrommetIconsGithub
 } from "./Icons";
 import { statusEnum, pagesEnum } from "../utils/enums";
 
 const Header = () => {
 
-  const { isAuthenticated, login, logout } = useCanister();
+  const { isAuthenticated } = useCanister();
   const { pathname } = useLocation();
   const [currentPage, setCurrentPage] = useState(pagesEnum.LANDING);
 
@@ -97,7 +98,6 @@ const Header = () => {
     <div className="flex h-[4.25rem] items-center px-6 xl:container xl:mx-auto">
       <div className="m-s:gap-5 m-l:gap-6 m-xl:gap-7 flex h-full w-full items-center gap-4 sm:gap-8 md:gap-10 lg:gap-12">
         <BrandLogoWidget />
-        <DevMode auth={{ login, logout, isAuthenticated }} />
         <div className="flex-1"></div>
         {getPageControls(currentPage)}
         <ThemeModeWidget />
@@ -107,26 +107,18 @@ const Header = () => {
   );
 };
 
-const DevMode = ({ auth: { isAuthenticated, login, logout } }) => {
-  if (!(import.meta.env?.MODE_IS_TESTING)) {
-    return null;
-  } else {
-    return (
-      <div className="themed-font-color z-[99]">
-          {isAuthenticated 
-          ? <RiBug2Fill className="h-12 w-12" onClick={() => logout()}/>
-          : <RiBug2Line className="h-12 w-12" onClick={() => login()}/>
-          }
-      </div>
-    );
-  }
-};
-
 const BrandLogoWidget = () => {
   return (
-    <header title="Don't YOU want to pay btc for all your goods and services easily?">
-      <a href="github" target="_blank" rel="noreferrer">
+    <header title="Don't YOU want to pay btc for all your goods and services easily?"
+      className="flex items-center"
+    >
+      <a href="https://fbx2h-faaaa-aaaak-ae32q-cai.icp0.io/" target="_blank" rel="noreferrer">
         <GameIconsTakeMyMoney className="stylish-menu-icon" />
+      </a>
+      <a target="_blank" rel="noreferrer"
+        href="https://github.com/atengberg/icrc1_payment_client_demo/"
+        className="m-s:ml-4 flex h-8 w-8 cursor-pointer flex-col items-center justify-center sm:ml-8">
+        <GrommetIconsGithub className="themed-font-color h-8 w-8" />
       </a>
     </header>
   );

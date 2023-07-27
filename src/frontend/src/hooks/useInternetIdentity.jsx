@@ -8,25 +8,23 @@ import { AuthClient } from '@dfinity/auth-client';
 // setting up that with the comlink library which is async/await for webworkers as
 // it is to promises).
 
-const useInternetIdentity = ({
-  onUserLoggedOut,
-} = {}) => {
+const useInternetIdentity = (onUserLoggedOutCallback) => {
 
   const authClientRef = useRef(null);
-  const principalRef = useRef(null);
+  const [principal, setPrincipal] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const updateAuth = useCallback(async (client) => {
     if (!client) throw new Error("Cannot update auth state without an auth client!");
     const authenticated = await client.isAuthenticated();
     authClientRef.current = client;
-    principalRef.current = client.getIdentity().getPrincipal().toString();
+    setPrincipal(() => client.getIdentity().getPrincipal().toString());
     setIsAuthenticated(() => authenticated);
   }, []);
 
-  const createSetAuthClient = useCallback(() => {
+  const createSetAuthClient = useCallback(async () => {
     // Use onIdle callback to redirect route, etc.
-    AuthClient.create().then(updateAuth);
+    await AuthClient.create().then(updateAuth);
   }, [updateAuth]);
 
   useEffect(() => {
@@ -49,26 +47,21 @@ const useInternetIdentity = ({
   const logout = useCallback(async () => {
     await authClientRef.current?.logout();
     // (Let the previous authClient be garbage collected so when web worker pulls identity, it'll be fresh.)
-    createSetAuthClient();
-    onUserLoggedOut();
+    await createSetAuthClient();
+    onUserLoggedOutCallback();
   }, [
-    createSetAuthClient, 
-    onUserLoggedOut
+    createSetAuthClient,
+    onUserLoggedOutCallback
   ]);
-
-  const getPrincipal = useCallback(() => principalRef?.current ? principalRef.current : '2vxsx-fae', 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isAuthenticated]
-  );
 
   return useMemo(() => {
     return {
       login,
       logout,
       isAuthenticated,
-      getPrincipal
+      principal,
     };
-  }, [login, logout, isAuthenticated, getPrincipal]);
+  }, [login, logout, isAuthenticated, principal]);
 };
 
 export default useInternetIdentity;

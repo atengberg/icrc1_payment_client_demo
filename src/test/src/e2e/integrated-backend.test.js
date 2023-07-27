@@ -2,22 +2,31 @@
 
 import { describe, expect, it } from 'vitest';
 import reducer, { initReducerState } from '@/feature/canister-provider/canister-provider-reducer.js';
-import { handleMessage, setUiCallback, setCacheCallback } from '@/worker/utils.js';
+import { handleMessage, setUiCallback } from '@/worker/utils.js';
 import { stateKeys, actionTypes, statusEnum } from '@/utils/enums.js';
 import * as utils from '@/utils/utils.js';
+import { Ed25519KeyIdentity } from '@dfinity/identity';
+
+function fromHexString(hexString)  {
+  return new Uint8Array((hexString.match(/.{1,2}/g) ?? []).map(byte => parseInt(byte, 16))).buffer;
+}
+
+const identity =  Ed25519KeyIdentity.fromKeyPair(
+  fromHexString("52EF30BF9E412A693D644AEBE8E22DE574759291065DC392382D4E633AC0C2E9"),
+  fromHexString("3771C1F078763EB5AA8561F642A82BD6F6D4F53DE06F5CE07410FC64E765427552EF30BF9E412A693D644AEBE8E22DE574759291065DC392382D4E633AC0C2E9")
+);
 
 const testIdentityAddress = "be2us-64aaa-aaaaa-qaabq-cai-mnnzrpq.4e9ece1d5903f7a012e4d6e98ec262de481149dfa156812985b6362b1795b69a";
 const otherIdentityAddress = 'be2us-64aaa-aaaaa-qaabq-cai-dwuxpki.ad051cbaf8f18cdce6e4fae39791a0415182fdf25387f099f180228c08c9cb0d';
 
 setUiCallback(args => args);
-setCacheCallback(args => args);
 
 describe(`E2E Testing of the Backend Integrated with Web Woker and Reducer (same as of CanisterProviders) processing`, () => {
 
   // Initialization for icrc1 token canister metadata:
   it('should trigger the web worker message handler to call and parse and callback to the reducer for the icrc1 token canister metadata state', async () => {
     // To Confirm the same is being produced as integrated-frontend-backend.test.jsx
-    const fr = await handleMessage({ type: actionTypes.QUERY, key: stateKeys.canisterMetadata, args: { principal: 'test-principal-cache-keypart' }});
+    const fr = await handleMessage({ type: actionTypes.QUERY, key: stateKeys.canisterMetadata, identity, args: { principal: 'test-principal-cache-keypart' }});
     const reducerState = reducer(initReducerState, fr[0]);
     expect(reducerState.canisterMetadata).toEqual({
       decimals: 8n,
@@ -38,7 +47,7 @@ describe(`E2E Testing of the Backend Integrated with Web Woker and Reducer (same
   // Initialization for account state:
   it('should have the worker util handle message trigger the call and parse its response and update the reducer state for the initial account state', async () => {
     // Simulate what the CanisterProvider does when initializing the account state:
-    const fr = await handleMessage({ type: actionTypes.QUERY, key: stateKeys.accountStateSync, args: { principal: 'test-principal-cache-keypart' }});
+    const fr = await handleMessage({ type: actionTypes.QUERY, key: stateKeys.accountStateSync, identity, args: { principal: 'test-principal-cache-keypart' }});
     let containsAccountBalance = false, containsAccountPayments = false;
     let data1, data2;
     const inspect = ([{ type, key, payload }]) => {
@@ -77,13 +86,13 @@ describe(`E2E Testing of the Backend Integrated with Web Woker and Reducer (same
     // Simulate when the SendPaymentForm successfully calls back to the SendPayment page to the CanisterProvider when a new payment is to be sent.
 
     // First the canisterMetadata must be set (for decimals value, though this is the first thing automatically done by the frontend app):
-    const fr = await handleMessage({ type: actionTypes.QUERY, key: stateKeys.canisterMetadata, args: { principal: 'test-principal-cache-keypart' }});
+    const fr = await handleMessage({ type: actionTypes.QUERY, key: stateKeys.canisterMetadata, identity, args: { principal: 'test-principal-cache-keypart' }});
     let reducerState = reducer(initReducerState, fr[0]);
     // Verify the decimals have been set:
     expect(reducerState.canisterMetadata.decimals).toBe(8n);
 
     // Also means createdCount, accountAddress and payments must be set (so set them):
-    const sr = await handleMessage({ type: actionTypes.QUERY, key: stateKeys.accountStateSync, args: { principal: 'test-principal-cache-keypart' }});
+    const sr = await handleMessage({ type: actionTypes.QUERY, key: stateKeys.accountStateSync, identity, args: { principal: 'test-principal-cache-keypart' }});
     const [[args1], [args2]] = sr;
     reducerState = reducer(reducerState, args1);
     reducerState = reducer(reducerState, args2);
@@ -121,7 +130,7 @@ describe(`E2E Testing of the Backend Integrated with Web Woker and Reducer (same
     expect(reducerState.payments[0].status.type).toBe(statusEnum.PENDING);
 
     // Initiate the send_payment call:
-    const [spr] = await handleMessage({ type: actionTypes.UPDATE, key: stateKeys.payment, args });
+    const [spr] = await handleMessage({ type: actionTypes.UPDATE, identity, key: stateKeys.payment, args });
     // Verify returned payment view model has the same values as the client created payment:
     const { payment } = spr.payload;
     expect(payment.status.type).toBe(statusEnum.CONFIRMED);

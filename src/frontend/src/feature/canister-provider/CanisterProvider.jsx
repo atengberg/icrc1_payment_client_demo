@@ -1,5 +1,6 @@
 import { useMemo, createContext, useReducer, useCallback, useEffect } from 'react';
 import useDedicatedWorker from '../../hooks/useDedicatedWorker';
+import useInternetIdentity from '../../hooks/useInternetIdentity';
 import Spinner from '../../components/Spinner';
 import reducer, { initReducerState } from "./canister-provider-reducer";
 import { stateKeys, actionTypes } from '../../utils/enums';
@@ -12,17 +13,13 @@ const CanisterContext = createContext({});
  * a callback to useDedicatedWorker will be needed). 
  * Note { type, key, payload / args } type is used for both reducer's dispatch and webworker messages' data. 
  * */
-const CanisterProvider = ({ 
-  auth,
-  workerFilePath,
-  children
-}) => {
+const CanisterProvider = ({ children }) => {
   
   // Init the reducer:
   const [state, dispatch] = useReducer(reducer, initReducerState);  
   
-  // Init the webworker handler, passing it the worker's path and reducer's dispatch:
-  const { postMessage } = useDedicatedWorker(workerFilePath, dispatch);
+  // Init the webworker handler (modulePath will be hard coded):
+  const { postMessage } = useDedicatedWorker(null, dispatch);
 
   // Cleanup when unmounted:
   useEffect(() => { return () => dispatch({ type: actionTypes.RESET });}, []);
@@ -48,13 +45,18 @@ const CanisterProvider = ({
     });
   }, [postMessage])
 
+  const onUserLoggedOutCallback = useCallback(() => {
+    const key = stateKeys.accountStateSync;
+    postMessage({ type: actionTypes.STOP, key });
+    dispatch({ type: actionTypes.INITIALIZED, key, payload: false });
+  }, [postMessage])
+
   const {
     isAuthenticated,
     login,
     logout,
-    // getPrincipal used to create cache key in worker:
-    getPrincipal
-  } = auth;
+    principal,
+  } = useInternetIdentity(onUserLoggedOutCallback);
 
   // Note the clientPaymentId is actually used (since it's the UI). 
   const getPaymentById = useCallback((clientPaymentId) => state?.payments?.find(p => p.clientPaymentId === clientPaymentId), [state]);
@@ -82,9 +84,6 @@ const CanisterProvider = ({
     onDispatchSendPayment,
     getPaymentById,
   ]);
-
-  // Passed to the worker for checking the ibd cache:
-  const principal = getPrincipal();
 
   // Initializes canister metadata:
   useEffect(() => {

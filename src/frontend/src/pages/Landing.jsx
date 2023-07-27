@@ -1,5 +1,3 @@
-import ckbtc from "../../assets/ckbtc.svg";
-
 const copy = {
   title: 'ICRC1 Payment Demo',
   description: 'A 100% on-chain mobile oriented payment client dapp built on the Internet Computer Protocol with React, Tailwind and Motoko to demonstrate how customers at a point of sale could easily make payments using the ICRC1 token standard.',
@@ -7,7 +5,6 @@ const copy = {
 }
 
 const Landing = () => {
- 
   return (
     <section className="scrollable min-h-[40rem]" aria-labelledby="label-landing-page">
       <label className="sr-only" name="label-landing-page" id="label-landing-page">ICRC1 Payment Client Demo landing page</label>
@@ -30,7 +27,7 @@ const Landing = () => {
               title="Visit the ckBTC developer docs at the Dfinity homepage (opens in a new window)"
               aria-label="Visit the ckBTC developer docs at the Dfinity homepage (opens in a new window)."
               >
-              <img src={ckbtc} className="m-s:w-[12rem] m-s:h-[12rem] m-xl:w-[14rem] m-xl:h-[14rem] h-24 w-24 md:h-[18rem] md:w-[18rem]" />
+              <img src={new URL('../../assets/ckbtc.svg', import.meta.url).href} className="m-s:w-[12rem] m-s:h-[12rem] m-xl:w-[14rem] m-xl:h-[14rem] h-24 w-24 md:h-[18rem] md:w-[18rem]" />
           </a>
           <span className="landing-short-description">{copy.shortDescription}</span>
         </div>

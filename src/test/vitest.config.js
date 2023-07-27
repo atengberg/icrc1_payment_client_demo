@@ -25,9 +25,6 @@ const importAsMetaEnvVars = fs.readFileSync(path
   }
 }, {});
 
-const workerPath = path.join(__dirname, 'src', 'unit', 'unit-worker.js');
-const originalWorkerPath = path.join(__dirname, '..', 'frontend', 'src', 'worker', 'worker.js');
-
 export default defineConfig({
   // When using this project structure, this vite config doesn't seem to pickup other's EnvironmentalPlugin env vars set. 
   ...viteConfig,
@@ -40,11 +37,7 @@ export default defineConfig({
   define: {
     // (Also serves as alternative example to using EnvironmentalPlugin): 
     ...importAsMetaEnvVars,
-    'import.meta.env.WORKER_PATH': JSON.stringify(workerPath),
     'import.meta.env.WORKER_HELLO_WORLD': JSON.stringify('Hello from the Web Worker unit test!'),
-    'import.meta.env.OG_WORKER_PATH': JSON.stringify(originalWorkerPath),
-    'import.meta.env.MODE_IS_TESTING': JSON.stringify(true),
-    'import.meta.env.DISABLE_INDEXEDB': JSON.stringify(true),
   },
   test: {
     setupFiles: ['./setup-teardown-hooks.js'],
