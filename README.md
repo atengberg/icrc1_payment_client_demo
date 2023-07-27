@@ -3,9 +3,8 @@
 ## Adaption of BNT-3 ICRC1 Compliant Payment Flow with web workers, Tailwind &amp; more...
 
 <p align="center">
-  <img width="800" height="auto" src="./imgs/landing_screenshot_800w.png">
+  <img width="800" height="auto" alt="Screenshot of Landing Page" src="./imgs/landing_screenshot_800w.png">
 </p>
-
 
 ### Project Structure
  - [backend](./src/backend/) - backend canister processing ICRC1 payments 
@@ -16,6 +15,9 @@
  - [icrc1-token-canister](./src/icrc1-token-canister/) - Dfinity provided rosetta based ICRC1 canister wasm and did used to develop backend's interactions with mainnet ICRC1 token canister 
 
 ### Setup
+
+Note the setup script requires the current dfx identity not to require unlocking each time a dfx command is issued. 
+
  1. Clone a local copy from [insert github link]
  2. Install local dependencies and start the local replica testnet configured for the project by entering the command:
  ```bash
@@ -37,11 +39,22 @@ Working with the backend in a Javascript environment is available in the `workbe
 ```
 You should see that file's console log output in the terminal. Alternatively you can use the Candid UI to interact with the backend canister in the browser, visit the [Internet Computer Guide](https://internetcomputer.org/docs/current/developer-docs/backend/motoko/candid-ui) for more information.
 
+Also note in the local testnet, the current dfx identity will receive 100 ICRC1 tokens (normal units) in the ICRC1 account corresponding to the subaccount address created for that identity by the backend payment processing canister. 
 ### Testing
   1. After a local copy is cloned, all testing can be done by entering the command:
 ```bash
 npm run test
 ```
+
+All tests are in the [src/test](./src/test/) subdirectory and are managed by the same `Vitest` instance.
+
+The results of the tests will displayed in the terminal output. 
+
+To run tests in watch mode, first `cd` into `src/tests` and then run `npm run test`. Testing is made up of the units tests of the frontend and backend, and the integrated E2E testing which is focused on how the [utils of the web worker](./src/frontend/src/worker/utils.js) process the calls and responses of the backend canister's API and how they are become a part ofthe UI via the `reducer` (that is also used by `CanisterProvider`). For more dedicated projects, using an E2E testing library like [Cypress](https://www.cypress.io/) would provide better coverage. 
+
+An important note is that different environments are used for testing (`jsdom` versus `node`), and `jsdom` may require additional configuration for it to work with `agent-js` out of the box.
+
+This test identity is the ED25519 key pair provided by the `dfx nns extension` code base. If the project is started with the testing flag (`npm run test` in the project's root directory) this identity will receive 100 CVCMICRC1 to use.
 
 ### Note on Setup and Test Scripts
 
@@ -73,15 +86,13 @@ All the API methods are typed which can be viewed in its [Types.mo](./src/backen
 
 This is a Vite bundled, React and Tailwind based web app that uses a web worker to handle all processing with the backend canister so it occurs off the main thread. 
 
+Web workers have a different context and 
+
 For more details, check out its [README](./src/frontend/README.md).
 
-### Tests
-
-Testing is made up of the units tests of the frontend and backend, and the integrated end to end testing which is focused on the interaction of the custom React hooks from the frontend, the web worker's data transfer model processing utility methods, and the backend canister's API. 
-
-There is additional testing of the backend canister for the API methods not available to the frontend, such as the `set_icrc1_token_canister_id` method. 
-
-An example workspace for iterating development as shown by developing this E2E testing is available in the `workbench` subproject. 
+<p align="center">
+  <img width="800" height="auto" alt="Screenshot of Home Page" src="./imgs/home_screenshot_800w.png">
+</p>
 
 ### Additional Links
 

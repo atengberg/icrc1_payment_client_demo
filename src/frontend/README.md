@@ -10,11 +10,24 @@ This is done within a context provider [CanisterProvider.jsx](./src/feature/cani
 ### Pages
 
 - [Landing.jsx](./src/pages/Landing.jsx) - the not-authenticated arguably lackluster landing page.  
+<p align="center">
+  <img width="800" height="auto" alt="Screenshot of Landing Page" src="../../imgs/landing_screenshot_800w.png">
+</p>
+
 - [Home.jsx](./src/pages/Home.jsx) - the authenticated landing page, shows the [AccountOverview.jsx](./src/feature/home/AccountOverview.jsx) and [ICRC1CanisterMetadata.jsx](./src/feature/home/ICRC1CanisterMetadata.jsx) components which show the stats associated with the caller's ICRC1 subaccount (currently only one per caller--the funds of which payments debits are withdrawn from and can be credited by depositing into its QR code displayed address) and the associated ICRC1 token canister metadata (including its canister id, and svg encoded logo if available).  
+
+<p align="center">
+  <img width="800" height="auto" alt="Screenshot of Home Page" src="../../imgs/home_screenshot_800w.png">
+</p>
+
 - [Payments.jsx](./src/pages/Payments.jsx) - the very mobile responsive list of payments featuring the custom built [AutoEllipsizingTextSpan.jsx](./src/components/AutoEllipsizingTextSpan.jsx) which ellipsizes the address into its leading and trailing five characters or if a subaccount is present also includes the checksum and the the first three characters of the subaccount (unless the subaccount is shorter than its ellipsized form, in which case the entire subaccount is included); although `AutoEllipsizingTextSpan.jsx` will ellipsize any text to its full width according to the ellipsize function provided, the default value being `ellipsizeICRC1Address` from [ellipsize-ICRC1-characters.js](./src/utils/ellipsize-ICRC1-address.js).  
 - [PaymentDetails.jsx](./src/pages/PaymentDetails.jsx) - shows the details of a payment when a user "clicks" on one in the `Payments` listing, using its id via the page's `useParams` encoded route which is passed to the `getPaymentById` from `useCanister` and shows all the details of that payment including its current status which will include the transaction index and time if successful, or time and transfer err or inter-canister caught err if failed (unless it was to an invalid recipient address, which is handled by this client but that's not the canister's only potential caller); or the payment will be pending. Note the payment can be copied into a new send payment by clicking the copy icon in the nav bar on this page.  
 - [SendPayment.jsx](./src/pages/SendPayment.jsx) - contains the form for sending a new payment that uses Formik for managing inputs, errors and validation. It also uses a [QrCodeScanner.jsx](./src/feature/qr-code-scanner/QrCodeScanner.jsx) together with the payment decoding utils of [ic-js](https://github.com/dfinity/ic-js) to set the input fields if a valid payment encoding is scanned. 
-  
+
+<p align="center">
+  <img width="800" height="auto" alt="Screenshot of Home Page" src="../../imgs/sendpayment_ok_screenshot_800w.png">
+</p>
+
 ### Web Worker
 
 Note that as all the canister communication is handled by the background processing ("non-blocking") of the web worker, when the inputs are valid for a payment to be sent, and it is submitted by the form on that page, the UI immediately creates a pending payment viewmodel, using the `clientPaymentId` UI created UUID as its key, when the args for the backend's `send_payment` API method are created from the inputs by [prepareSendPaymentArgs](./src/utils/utils.js#L155). This payment view model is passed to the `CanisterProvider`'s `reducer` at the same time the args are sent as an event's data to the web worker to make the call to the backend canister's `send_payment` method. 
