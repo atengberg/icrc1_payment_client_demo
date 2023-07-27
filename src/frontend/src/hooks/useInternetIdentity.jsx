@@ -36,8 +36,8 @@ const useInternetIdentity = (onUserLoggedOutCallback) => {
     authClientRef.current?.login({
       identityProvider:
         import.meta.env.DFX_NETWORK === 'ic'
-          ? 'https://identity.ic0.io/#authorize'
-          : `http://localhost:4943?canisterId=${import.meta.env.CANISTER_ID_INTERNET_IDENTITY}#authorize`,
+          ? 'https://identity.ic0.app/#authorize'
+          : `http://127.0.0.1:4943?canisterId=${import.meta.env.CANISTER_ID_INTERNET_IDENTITY}#authorize`,
       onSuccess: async () => {
         await updateAuth(authClientRef.current);
       }
